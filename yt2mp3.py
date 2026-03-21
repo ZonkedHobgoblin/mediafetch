@@ -14,14 +14,14 @@ import sys
 from pathlib import Path
 
 # Global settings for codec mapping
-mma_q = ["128", "192", "256", "320"]
-opus_q = ["96", "128", "160"]
-vorbis_q = ["128", "192"]
-na_q = ["0"] # Used for lossless qualities so bitrate doesn't apply. (na = N/A)
-codec_types = {"mp3":mma_q, "m4a":mma_q, "aac":mma_q, "opus":opus_q,
-                   "vorbis":vorbis_q, "flac":na_q, "alac":na_q, "wav":na_q}
-valid_codecs = [*codec_types]
-valid_qualities = set([item for sublist in codec_types.values()
+MMA_Q = ["128", "192", "256", "320"]
+OPUS_Q = ["96", "128", "160"]
+VORBIS_Q = ["128", "192"]
+NA_Q = ["0"] # Used for lossless qualities so bitrate doesn't apply. (na = N/A)
+CODEC_TYPES = {"mp3":MMA_Q, "m4a":MMA_Q, "aac":MMA_Q, "opus":OPUS_Q,
+                   "vorbis":VORBIS_Q, "flac":NA_Q, "alac":NA_Q, "wav":NA_Q}
+valid_codecs = [*CODEC_TYPES]
+valid_qualities = set([item for sublist in CODEC_TYPES.values()
                        for item in sublist])
 script_path = Path(__file__).resolve()
 os_name = platform.system()
@@ -217,7 +217,7 @@ def config(config_settings, config_path):
                                                             True, True)})
             # Automatically assign the highest available bitrate for the new codec
             config_settings.update({"quality":
-                                    ((codec_types.get(
+                                    ((CODEC_TYPES.get(
                                         config_settings.get("codec")))[-1])})
             save_config(config_settings, config_path)
             print("Codec type set!")
@@ -225,16 +225,16 @@ def config(config_settings, config_path):
         case 2:
             clear()
             # If the codec is lossless (e.g. "0"), skip quality selection
-            if not codec_types.get(config_settings.get('codec'))[0] == "0" :
+            if not CODEC_TYPES.get(config_settings.get('codec'))[0] == "0" :
                 print("2 - Audio Quality\nCurrent Audio type & quality:\n"
                       f"Type: {config_settings.get('codec')}\n"
                       f"Quality: {config_settings.get('quality')}\n"
                       "Please select one of the following preferred "
                       "qualities available for your chosen audio type:")
-                print(*(codec_types.get(config_settings.get('codec'))))
+                print(*(CODEC_TYPES.get(config_settings.get('codec'))))
                 config_settings.update({"quality":
                                         get_sanitized_str_input("> ",
-                                                                codec_types.get(
+                                                                CODEC_TYPES.get(
                                                                     config_settings.get('codec')),
                                                                 True, True)})
                 save_config(config_settings, config_path)
