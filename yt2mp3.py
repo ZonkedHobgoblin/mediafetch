@@ -152,7 +152,7 @@ def download_video(yt_dlp, url, codec, quality, folder):
         }],
         
         # Pretending to be the Android App (Instead of a web browser) stops
-        # "Signature solving" and "n challanges" issues when downloading
+        # "Signature solving" and "n challenges" issues when downloading
         'extractor_args': {
             'youtube': {
                 'player_client': ['android', 'ios'],
@@ -381,31 +381,27 @@ def checknget_ffmpeg():
             sys.exit(1)
             
         case "Darwin":
-            print("Checking for Homebrew...")
-            if shutil.which("brew") is not None and auto_install == "y":
-                print("Homebrew found!")
-                try:
-                    print("Attempting auto install via Homebrew...")
-                    subprocess.run(['brew', 'install', 'ffmpeg'], check=True)
-                    print("\nFFmpeg succesfully installed! Script will "
-                          "restart...")
+            has_brew = shutil.which("brew") is not None
+            if auto_install == "y":
+                if has_brew:
+                    try:
+                        print("Attempting auto install via Homebrew...")
+                        subprocess.run(['brew', 'install', 'ffmpeg'], check=True)
+                        print("\nFFmpeg succesfully installed! Script will "
+                              "restart...")
+                        pause()
+                        applescript = ('tell application "Terminal" to do script '
+                        f'"{sys.executable} {script_path}"')
+                        subprocess.Popen(['osascript', '-e', applescript])
+                        sys.exit(0)
+                    except Exception as error:
+                        print("\nAuto-Install error, please review manual "
+                              f"instructions!\nError:{error}")
+                        pause()
+                else:
+                    print("Homebrew was not found, Please review manual "
+                          "instructions!")
                     pause()
-                    applescript = ('tell application "Terminal" to do script '
-                    f'"{sys.executable} {script_path}"')
-                    subprocess.Popen(['osascript', '-e', applescript])
-                    sys.exit(0)
-                except Exception as error:
-                    print("\nAuto-Install error, please review manual "
-                          f"instructions!\nError:{error}")
-                    pause()
-            elif shutil.which("brew") is not None:
-                print("Homebrew found! Proceed to Step 2 on manual "
-                      "installation instructions.")
-                pause()
-                
-            else:
-                print("Homebrew not found! Please install Homebrew!\n")
-                pause()
                 
             clear()
             print("Manual FFmpeg installation:\nStep 1. Install Homebrew if "
