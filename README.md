@@ -8,7 +8,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 * **Dynamic Configuration:** Set your preferred audio codec (MP3, FLAC, WAV, Opus, etc.) and quality. The script actively prevents invalid bitrate/codec combinations.
 * **Automated Dependency Management:** Missing FFmpeg or yt_dlp? No problem. The script detects your OS (Windows, macOS, Linux) and can automatically attempt to install FFmpeg, using `winget`, `brew`, or `apt`, or `pip` for yt_dlp.
 * **State Management:** Saves your download directory and preferred formats to a local `config.json` file.
-* **Anti-Bot Spoofing:** Conditionally utilizes mobile client spoofing to bypass YouTube's recent bot-protection algorithms.
+* **Anti-Bot Spoofing:** Conditionally utilizes mobile client spoofing to bypass YouTube's bot-protection algorithms.
 
 ## Prerequisites
 
