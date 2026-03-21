@@ -1,2 +1,97 @@
-# yt2mp3
-Convert videos/playlists to MP3 files.
+# yt2mp3 🎵
+
+A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTube videos and playlists as audio files. Powered by `yt_dlp` and `FFmpeg`.
+
+## Features
+
+* **Interactive CLI Menu:** Easy-to-use terminal interface for downloading, configuring, and managing audio formats.
+* **Dynamic Configuration:** Set your preferred audio codec (MP3, FLAC, WAV, Opus, etc.) and quality. The script actively prevents invalid bitrate/codec combinations.
+* **Automated Dependency Management:** Missing FFmpeg or yt_dlp? No problem. The script detects your OS (Windows, macOS, Linux) and can automatically attempt to install FFmpeg, using `winget`, `brew`, or `apt`, or `pip` for yt_dlp.
+* **State Management:** Saves your download directory and preferred formats to a local `config.json` file.
+* **Anti-Bot Spoofing:** Conditionally utilizes mobile client spoofing to bypass YouTube's recent bot-protection algorithms.
+
+## Prerequisites
+
+* **Python 3.10** or higher.
+* **yt_dlp** python library.
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ZonkedHobgoblin/yt2mp3
+   cd yt2mp3
+   ```
+
+2. **Install yt_dlp library:**
+  Ensure you have yt_dlp installed.
+  Don't worry if you don't, the script can attempt to install yt_dlp itself. If it can't, it will provide you with manual instructions on how to install yt_dlp.
+    #### How to manually install yt_dlp (If you don't want to use the script)
+   Windows:
+     ```bash
+     py -m pip install yt_dlp
+     or
+     py -m pip install -r requirements.txt
+     ```
+     Linux & Mac:
+     ```bash
+     python3 -m pip install yt_dlp
+     or
+     python3 -m pip install -r requirements.txt
+     ```
+
+3. **FFmpeg Setup**
+
+   Ensure you have FFmpeg on your system.
+   Don't worry if you don't, the script can attempt to install FFmpeg itself. If it can't it will provide you with manual instructions on how to install FFmpeg.
+    #### How to manually install FFmpeg (If you don't want to use the script)
+
+   Windows:
+    ```
+    Manual FFmpeg installation:
+    Option 1: Open CMD and run: winget install ffmpeg
+    Option 2: Download from: https://github.com/BtbN/FFmpeg-Builds/releases
+    ```
+    Linux:
+    ```
+    Manual FFmpeg installation:
+    Debian/Ubuntu: sudo apt install ffmpeg
+    Arch Linux:  sudo pacman -S ffmpeg
+    Fedora: sudo dnf install ffmpeg
+    ```
+    Mac:
+   ```
+   Manual FFmpeg installation:
+   Step 1. Install Homebrew if missing: https://brew.sh/
+   Step 2. Open terminal and run: brew install ffmpeg
+   ```
+
+## Usage
+   Run the script from your terminal (or just open it to terminal in a file viewer)
+   ```bash
+   python yt2mp3.py
+   ```
+
+## The menu
+  Once launched, if yt_dlp or ffmpeg isn't installed, you'll be greeted with an option to attempt auto installation or see manual instructions on how to.
+  If both dependencies are installed, you'll instead see 4 menu options:
+  * **Download**: Paste a YouTube video or playlist URL to begin extracting audio (Also works with YouTube music URLs)
+  * **Config**: Change your target audio format (Like mp3, flac, etc.), adjust target bitrate (Like 128kbps, 320kbps, etc.), or set a custom download directory. The target file and qualities are not guaranteed, and are preferred options based upon what yt_dlp can get.
+  * **About**: View info about the script
+  * **Quit**: Stop the script
+
+## Roadmap
+This project is actively being developed. Upcoming features include:
+* [v1.0.2] **Type Hinting**: Adding type hinting for functions
+* [v1.1.0] **Video Formats**: Support to download videos in a range of formats.
+* [v1.2.0] **Cookie passing**: Optional support to use your browser cookies if download fails without them.
+* [v1.3.0] **Better downloading**: Support for downloading entire channels, from .txts containing links, or inputting multiple URLs (No playlist needed).
+* [v1.4.0] **Continue unfinished downloads**: If downloading for a channel, txt or url list wasn't finished, continue from where it left off.
+* [v1.5.0] **Standalone Executable**: Compiling the script into an executable file so it can be used without Python.
+* [v2.0.0] **GUI Update**: Migrating from the terminal CLI interface into a Graphical User Interface.
+
+## Disclamer
+This tool is for educational and personal archiving purposes only. Please respect YouTube's Terms of Service and the copyright of content creators. Do not use this tool to distribute copyrighted material.
+
+## Author
+**Created by [zonkedhobgoblin](https://github.com/ZonkedHobgoblin)**
