@@ -1,5 +1,5 @@
 """
-yt2mp3 v1.0.3 - 21/03/26
+yt2mp3 v1.0.4 - 21/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -14,6 +14,8 @@ import sys
 from pathlib import Path
 
 # Global settings for codec mapping
+YT2MP3_VER = "v1.0.4"
+REPO_URL = "https://github.com/ZonkedHobgoblin/yt2mp3/"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
 VORBIS_Q = ["128", "192"]
