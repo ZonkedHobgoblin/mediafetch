@@ -18,17 +18,22 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 ## 🚀 Installation
 
 1. **Clone the repository:**
-   ```bash
+   ```
    git clone https://github.com/ZonkedHobgoblin/yt2mp3
    cd yt2mp3
    ```
 
+   That's it! The script can handle installing yt_dlp and FFmpeg itself. If you'd rather install it yourself, or the script fails, read the next steps below.
+<details>
+<summary><b>Step 2 - Instructions for installing yt_dlp</b></summary>
+   
 2. **Install yt_dlp library:**
-  Ensure you have yt_dlp installed.
-  Don't worry if you don't, the script can attempt to install yt_dlp itself. If it can't, it will provide you with manual instructions on how to install yt_dlp.
+   
+     Ensure you have yt_dlp installed.
+     Don't worry if you don't, the script can attempt to install yt_dlp itself. If it can't, it will provide you with manual instructions on how to install yt_dlp.
     #### How to manually install yt_dlp (If you don't want to use the script)
    Windows:
-     ```bash
+     ```
      py -m pip install yt_dlp
      or
      py -m pip install -r requirements.txt
@@ -39,7 +44,10 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
      or
      python3 -m pip install -r requirements.txt
      ```
-
+</details>
+<details>
+<summary><b>Step 3 - instructions for installing FFmpeg</b></summary>
+   
 3. **FFmpeg Setup**
 
    Ensure you have FFmpeg on your system.
@@ -65,6 +73,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
    Step 1. Install Homebrew if missing: https://brew.sh/
    Step 2. Open terminal and run: brew install ffmpeg
    ```
+</details>
 
 ## 💻 Usage
    Run the script from your terminal (or just open it to terminal in a file viewer)
