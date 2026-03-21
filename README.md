@@ -18,6 +18,8 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 ## 🚀 Installation
 
 1. **Clone the repository:**
+   
+   Download the release .py file, or you can clone the repo with `git`:
    ```
    git clone https://github.com/ZonkedHobgoblin/yt2mp3
    cd yt2mp3
@@ -89,12 +91,32 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
   * **About**: View info about the script
   * **Quit**: Stop the script
 
+## 📁 Supported file types & qualities
+<details>
+<summary><b>Supported file types and their respective qualities</b></summary>
+These file types are supported by yt2mp3, and it will attempt to download files as your preferred type.
+   
+<sup>*Please note: Even if saved as a lossless audio file or at a high bitrate, the true audio quality will remain limited by the original YouTube source stream.*</sup>
+
+| File Type  | Qualities (kbps) |
+| ------------- | ------------- |
+| MP3  | 128 / 192 / 256 / 320  |
+| M4A  | 128 / 192 / 256 / 320  |
+| AAC  | 128 / 192 / 256 / 320  |
+| Opus  | 96 / 128 / 160  |
+| Vorbis  | 128 / 192  |
+| Flac  | Lossless  |
+| Alac  | Lossless  |
+| Wav  | Lossless  |
+
+</details>
+
 ## 🗺️ Roadmap
 This project is actively being developed. Upcoming features include:
 * [v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.
 * [v1.0.5] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
 * [v1.1.0] **Video Formats**: Support to download videos in a range of formats, along with subtitles.
-* [v1.2.0] **Cookie passing**: Optional support to use your browser cookies if download fails without them.
+* [v1.2.0] **Cookie passing**: Optional support to use your browser cookies. For YouTube Premium users, this allows access to higher audio qualities.
 * [v1.3.0] **Batch Downloading**: Support for downloading entire channels, from .txts containing links, or inputting multiple URLs (No playlist needed).
 * [v1.4.0] **Download Persistence**: Resuming interrupted batch downloads from where it left off.
 * [v1.5.0] **Standalone Executable**: Compiling the script into an executable file so it can be used without Python.
