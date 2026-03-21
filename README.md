@@ -110,12 +110,14 @@ These file types are supported by yt2mp3, and it will attempt to download files 
 ## Roadmap
 This project is actively being developed. Upcoming features include:
 - [x] ~~[v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.~~
-- [ ] [v1.0.5] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
+- [ ] [v1.0.4] **Update notifictions**: If a new release is out, any older versions will prompt the user to update.
+- [ ] [v1.0.6] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
 - [ ] [v1.1.0] **Video Formats**: Support to download videos in a range of formats, along with subtitles.
 - [ ] [v1.2.0] **Cookie passing**: Optional support to use your browser cookies. For YouTube Premium users, this allows access to higher audio qualities.
 - [ ] [v1.3.0] **Batch Downloading**: Support for downloading entire channels, from .txts containing links, or inputting multiple URLs (No playlist needed).
 - [ ] [v1.4.0] **Download Persistence**: Resuming interrupted batch downloads from where it left off.
 - [ ] [v1.5.0] **Standalone Executable**: Compiling the script into an executable file so it can be used without Python.
+- [ ] [v1.6.0] **Auto-Updating**: Allowing the executable to update itself if the user accepts. 
 - [ ] [v2.0.0] **GUI Migration**: Transitioning from a CLI to a full Graphical User Interface.
 
 ## ⚠️ Disclaimer
