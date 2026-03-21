@@ -29,47 +29,43 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 <details>
 <summary><b>Step 2 - Instructions for installing yt_dlp</b></summary>
    
-2. **Install yt_dlp library:**
-   
-     Ensure you have yt_dlp installed.
-     Don't worry if you don't, the script can attempt to install yt_dlp itself. If it can't, it will provide you with manual instructions on how to install yt_dlp.
-    #### How to manually install yt_dlp (If you don't want to use the script)
+   Ensure you have yt_dlp installed.
+   Don't worry if you don't, the script can attempt to install yt_dlp itself. If it can't, it will provide you with manual instructions on how to install yt_dlp.
+   #### How to manually install yt_dlp (If you don't want to use the script)
    Windows:
-     ```
-     py -m pip install yt_dlp
-     or
-     py -m pip install -r requirements.txt
-     ```
-     Linux & Mac:
-     ```bash
-     python3 -m pip install yt_dlp
-     or
-     python3 -m pip install -r requirements.txt
-     ```
+   ```
+   py -m pip install yt_dlp
+   or
+   py -m pip install -r requirements.txt
+   ```
+   Linux & Mac:
+   ```bash
+   python3 -m pip install yt_dlp
+   or
+   python3 -m pip install -r requirements.txt
+   ```
 </details>
 <details>
 <summary><b>Step 3 - instructions for installing FFmpeg</b></summary>
    
-3. **FFmpeg Setup**
-
    Ensure you have FFmpeg on your system.
    Don't worry if you don't, the script can attempt to install FFmpeg itself. If it can't it will provide you with manual instructions on how to install FFmpeg.
-    #### How to manually install FFmpeg (If you don't want to use the script)
+   #### How to manually install FFmpeg (If you don't want to use the script)
 
    Windows:
-    ```
-    Manual FFmpeg installation:
-    Option 1: Open CMD and run: winget install ffmpeg
-    Option 2: Download from: https://github.com/BtbN/FFmpeg-Builds/releases
-    ```
-    Linux:
-    ```
-    Manual FFmpeg installation:
-    Debian/Ubuntu: sudo apt install ffmpeg
-    Arch Linux:  sudo pacman -S ffmpeg
-    Fedora: sudo dnf install ffmpeg
-    ```
-    Mac:
+   ```
+   Manual FFmpeg installation:
+   Option 1: Open CMD and run: winget install ffmpeg
+   Option 2: Download from: https://github.com/BtbN/FFmpeg-Builds/releases
+   ```
+   Linux:
+   ```
+   Manual FFmpeg installation:
+   Debian/Ubuntu: sudo apt install ffmpeg
+   Arch Linux:  sudo pacman -S ffmpeg
+   Fedora: sudo dnf install ffmpeg
+   ```
+   Mac:
    ```
    Manual FFmpeg installation:
    Step 1. Install Homebrew if missing: https://brew.sh/
