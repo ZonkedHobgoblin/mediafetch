@@ -267,7 +267,7 @@ def config(config_settings, config_path):
                 save_config(config_settings, config_path)
                 print("Audio file download folder set!")
                 pause()
-            elif Path(str(script_path.parent) + "/" + new_path).is_absolute():
+            elif Path(script_path.parent / new_path).is_absolute():
                 config_settings.update({"folder":new_path})
                 save_config(config_settings, config_path)
                 print("Audio file download folder set!")
