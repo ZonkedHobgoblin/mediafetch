@@ -2,7 +2,7 @@
 
 A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTube videos and playlists as audio files. Powered by `yt_dlp` and `FFmpeg`.
 
-## ✨ Features
+## Features
 
 * **Interactive CLI Menu:** Easy-to-use terminal interface for downloading, configuring, and managing audio formats.
 * **Dynamic Configuration:** Set your preferred audio codec (MP3, FLAC, WAV, Opus, etc.) and quality. The script actively prevents invalid bitrate/codec combinations.
@@ -10,12 +10,12 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 * **State Management:** Saves your download directory and preferred formats to a local `config.json` file.
 * **Anti-Bot Spoofing:** Conditionally utilizes mobile client spoofing to bypass YouTube's recent bot-protection algorithms.
 
-## 📋 Prerequisites
+## Prerequisites
 
 * **Python 3.10** or higher.
 * **yt_dlp** python library.
 
-## 🚀 Installation
+## Installation
 
 1. **Clone the repository:**
    
@@ -73,13 +73,13 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
    ```
 </details>
 
-## 💻 Usage
+## Usage
    Run the script from your terminal (or just open it to terminal in a file viewer)
    ```bash
    python yt2mp3.py
    ```
 
-## 📟 The menu
+## The menu
   Once launched, if yt_dlp or ffmpeg isn't installed, you'll be greeted with an option to attempt auto installation or see manual instructions on how to.
   If both dependencies are installed, you'll instead see 4 menu options:
   * **Download**: Paste a YouTube video or playlist URL to begin extracting audio (Also works with YouTube music URLs)
@@ -87,7 +87,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
   * **About**: View info about the script
   * **Quit**: Stop the script
 
-## 📁 Supported file types & qualities
+## Supported file types & qualities
 <details>
 <summary><b>Supported file types and their respective qualities</b></summary>
 These file types are supported by yt2mp3, and it will attempt to download files as your preferred type.
@@ -107,7 +107,7 @@ These file types are supported by yt2mp3, and it will attempt to download files 
 
 </details>
 
-## 🗺️ Roadmap
+## Roadmap
 This project is actively being developed. Upcoming features include:
 * [v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.
 * [v1.0.5] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
@@ -121,5 +121,5 @@ This project is actively being developed. Upcoming features include:
 ## ⚠️ Disclaimer
 This tool is for educational and personal archiving purposes only. Please respect YouTube's Terms of Service and the copyright of content creators. Do not use this tool to distribute copyrighted material.
 
-## 👤 Author
+## Author
 **Created by [zonkedhobgoblin](https://github.com/ZonkedHobgoblin)**
