@@ -123,3 +123,5 @@ This tool is for educational and personal archiving purposes only. Please respec
 
 ## Author
 **Created by [zonkedhobgoblin](https://github.com/ZonkedHobgoblin)**
+
+<sub><sup>oh look, yet another sloppy youtube to mp3 project</sup></sub>
