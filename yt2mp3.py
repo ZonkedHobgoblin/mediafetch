@@ -1,5 +1,5 @@
 """
-yt2mp3 v1.0.0 - 20/03/26
+yt2mp3 v1.0.3 - 21/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
