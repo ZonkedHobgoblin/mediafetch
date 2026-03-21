@@ -82,13 +82,14 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 
 ## Roadmap
 This project is actively being developed. Upcoming features include:
-* [v1.0.2] **Type Hinting**: Adding type hinting for functions
+* [v1.0.2] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.
+* [v1.0.4] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
 * [v1.1.0] **Video Formats**: Support to download videos in a range of formats.
 * [v1.2.0] **Cookie passing**: Optional support to use your browser cookies if download fails without them.
-* [v1.3.0] **Better downloading**: Support for downloading entire channels, from .txts containing links, or inputting multiple URLs (No playlist needed).
-* [v1.4.0] **Continue unfinished downloads**: If downloading for a channel, txt or url list wasn't finished, continue from where it left off.
+* [v1.3.0] **Batch Downloading**: Support for downloading entire channels, from .txts containing links, or inputting multiple URLs (No playlist needed).
+* [v1.4.0] **Download Persistence**: Resuming interrupted batch downloads from where it left off.
 * [v1.5.0] **Standalone Executable**: Compiling the script into an executable file so it can be used without Python.
-* [v2.0.0] **GUI Update**: Migrating from the terminal CLI interface into a Graphical User Interface.
+* [v2.0.0] **GUI Migration**: Transitioning from a CLI to a full Graphical User Interface.
 
 ## Disclamer
 This tool is for educational and personal archiving purposes only. Please respect YouTube's Terms of Service and the copyright of content creators. Do not use this tool to distribute copyrighted material.
