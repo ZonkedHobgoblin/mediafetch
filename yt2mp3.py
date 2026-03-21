@@ -21,28 +21,25 @@ NA_Q = ["0"] # Used for lossless qualities so bitrate doesn't apply. (na = N/A)
 CODEC_TYPES = {"mp3":MMA_Q, "m4a":MMA_Q, "aac":MMA_Q, "opus":OPUS_Q,
                    "vorbis":VORBIS_Q, "flac":NA_Q, "alac":NA_Q, "wav":NA_Q}
 valid_codecs = [*CODEC_TYPES]
-valid_qualities = set([item for sublist in CODEC_TYPES.values()
-                       for item in sublist])
+valid_qualities = {item for sublist in CODEC_TYPES.values() for item in sublist}
 script_path = Path(__file__).resolve()
 os_name = platform.system()
 
 
-def clear():
+def clear() -> None:
     """Clears the terminal screen based on the operating system."""
-    subprocess.run(('cls' if os_name == 'Windows' else 'clear'),
-                   shell=True)
+    subprocess.run(('cls' if os_name == 'Windows' else 'clear'), shell=True)
 
 
-def pause():
+def pause() -> None:
     """Pauses the script and waits for user input before continuing."""
-    if os_name == "Windows":
-        subprocess.run('pause', shell=True)
-    else:
-        input("\nPress enter to continue . . . ")
+    input("\nPress enter to continue . . . ")
 
 
-def get_sanitized_num_input(prompt, target_type, min_value=None,
-                            max_value=None):
+def get_sanitized_num_input(prompt: str,
+                            target_type: type,
+                            min_value: int | float| None = None,
+                            max_value: int | float | None = None) -> int | float:
     """
     Prompts the user for a numeric input and safely handles invalid data.
 
@@ -71,8 +68,10 @@ def get_sanitized_num_input(prompt, target_type, min_value=None,
             print(f"Error: Invalid input. Please enter a {type_name}.")
 
 
-def get_sanitized_str_input(prompt, string_list=None, allow_anycase=False,
-                            should_strip=True):
+def get_sanitized_str_input(prompt: str,
+                            string_list: list[str] | None = None,
+                            allow_anycase: bool = False,
+                            should_strip: bool = True) -> str:
     """
     Prompts the user for string input, sanitizes it, and restricts choices if needed.
 
@@ -100,7 +99,7 @@ def get_sanitized_str_input(prompt, string_list=None, allow_anycase=False,
         return string_input
 
 
-def import_ytdlp():
+def import_ytdlp() -> module:
     # yt_dlp checking and setup
     try:
         import yt_dlp
@@ -131,7 +130,7 @@ def import_ytdlp():
             sys.exit(1)
 
             
-def download_video(yt_dlp, url, codec, quality, folder):
+def download_video(yt_dlp: module, url: str, codec: str, quality: str, folder: str) -> None:
     """
     Downloads audio from a YouTube URL using yt_dlp.
 
@@ -182,7 +181,7 @@ def download_video(yt_dlp, url, codec, quality, folder):
         print(f"Failed to download. Error: {error}\n")
 
 
-def menu():
+def menu() -> int:
     """Displays the main menu and captures the user's choice."""
     clear()
     print("yt2mp3 - Download Youtube videos as audio files\n"
@@ -190,7 +189,7 @@ def menu():
     return(get_sanitized_num_input("> ", int, 1, 4))
 
 
-def downloader(yt_dlp, config_settings):
+def downloader(yt_dlp: module, config_settings: dict[str, str]) -> None:
     """Handles the download flow from the main menu."""
     clear()
     link = input("Enter YouTube URL (Video or Playlist): ")
@@ -199,7 +198,7 @@ def downloader(yt_dlp, config_settings):
     pause()
     
 
-def config(config_settings, config_path):
+def config(config_settings: dict[str, str], config_path: Path) -> None:
     """Handles the configuration sub-menu, allowing the user to mutate settings."""
     clear()
     print("yt2mp3 config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
@@ -278,7 +277,7 @@ def config(config_settings, config_path):
                 pause()
 
 
-def about():
+def about() -> None:
     """Displays information about the script."""
     clear()
     print("About:\n\nyt2mp3 v1.0.0 by zonkedhobgoblin\n"
@@ -291,7 +290,7 @@ def about():
     pause()
 
 
-def save_config(config_settings, config_path):
+def save_config(config_settings: dict[str, str], config_path: Path) -> None:
     """Saves the current configuration dictionary to a local JSON file."""
     try:
         with open(config_path, 'w') as config_file:
@@ -302,7 +301,7 @@ def save_config(config_settings, config_path):
         pause()
 
     
-def load_config(config_path):
+def load_config(config_path: Path) -> dict[str, str]:
     """
     Loads configuration from a JSON file. 
     If the file is missing or corrupted, writes and returns default settings.
@@ -337,7 +336,7 @@ def load_config(config_path):
         return default_settings
 
 
-def checknget_ffmpeg():
+def checknget_ffmpeg() -> bool:
     """
     Checks system path for FFmpeg dependency. 
     If missing, prompts the user with OS-specific automated installation options.
@@ -448,7 +447,7 @@ def checknget_ffmpeg():
             sys.exit(1)
 
 
-def check_py():
+def check_py() -> None:
     """Ensures the script is running on a compatible version of Python."""
     if sys.version_info < (3, 10):
         print("This script requires Python 3.10 or higher!")
@@ -460,7 +459,7 @@ if __name__ == "__main__":
     check_py()
     yt_dlp = import_ytdlp()
     checknget_ffmpeg()
-    config_path = Path("config.json")
+    config_path = script_path.parent / "config.json"
     config_settings = load_config(config_path)
     while True:
         match menu():
