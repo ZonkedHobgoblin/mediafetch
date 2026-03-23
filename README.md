@@ -14,6 +14,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 
 * **Python 3.10** or higher.
 * **yt_dlp** python library.
+* **FFmpeg**
 
 ## Installation
 
