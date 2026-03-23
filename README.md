@@ -22,7 +22,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
    
    Download the release .py file, or you can clone the repo with `git`:
    ```
-   git clone https://github.com/Zonkedhobgoblin/anyaudio
+   git clone https://github.com/Zonkedhobgoblin/mediafetch
    cd anyaudio
    ```
 
@@ -77,7 +77,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 ## Usage
    Run the script from your terminal (or just open it to terminal in a file viewer)
    ```bash
-   python anyaudio.py
+   python mediafetch.py
    ```
 
 ## The menu
@@ -91,7 +91,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 ## Supported file types & qualities
 <details>
 <summary><b>Supported file types and their respective qualities</b></summary>
-These file types are supported by AnyAudio, and it will attempt to download files as your preferred type.
+These file types are supported by MediaFetch, and it will attempt to download files as your preferred type.
    
 <sup>*Please note: Even if saved as a lossless audio file or at a high bitrate, the true audio quality will remain limited by the original YouTube source stream.*</sup>
 
