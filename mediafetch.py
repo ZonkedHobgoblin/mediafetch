@@ -1,8 +1,8 @@
 ######
-# Add update opt to config menu, also remove this
+# note to sekf add update opt to config menu, also remove this
 ######
 """
-yt2mp3 v1.0.4 - 21/03/26
+mediafetch v1.0.4 - 23/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -16,12 +16,13 @@ import shutil
 import sys
 import urllib.request
 import urllib.error
-import importlib.metadata
+from types import ModuleTypeType
+from importlib.metadata import distribution, version, PackageNotFoundError
 from pathlib import Path
 
 # Global settings for codec mapping
-YT2MP3_VER = "v1.0.4"
-REPO_URL = "https://github.com/ZonkedHobgoblin/yt2mp3/"
+MEDIAFETCH_VER = "v1.0.4"
+REPO_URL = "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
 VORBIS_Q = ["128", "192"]
@@ -106,33 +107,33 @@ def get_sanitized_str_input(prompt: str,
             continue
         return string_input
 
-#Defo can use some DRY with these next 2, MAYBE 3 modules
-def yt2mp3_update_check() -> None:
+#Defo can use some DRY with these next 2, MAYBE 3 ModuleTypes
+def mediafetch_update_check() -> None:
     """
     Ping Github api, check if newer release exists.
     """
-    req = urllib.request.Request(REPO_URL, headers={"User-Agent": "yt2mp3"})
+    req = urllib.request.Request(REPO_URL, headers={"User-Agent": "mediafetch"})
 
     try:
         with urllib.request.urlopen(req, timeout=3) as response:
             data = json.loads(response.read().decode('utf-8'))
             latest_version = data.get('tag_name')
 
-            if latest_version != YT2MP3_VER:
+            if latest_version != MEDIAFETCH_VER:
                 clear()
-                print("Update Available:\nA newer version of yt2mp3 has been released!\n"
-                      f"Current Version: {YT2MP3_VER}\nLatest Version: {latest_version}\n"
-                      "It is recommened you install the latest version, for reasons such"
+                print("Update Available:\nA newer version of MediaFetch has been released!\n"
+                      f"Current Version: {MEDIAFETCH_VER}\nLatest Version: {latest_version}\n"
+                      "It is recommended you install the latest version, for reasons such"
                       " as bug fixes.")
                 pause()
     except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
         print("Failed to connect to GitHub to check for updates. Are you connected to the internet?"
-              "\nScript will not retry updating yt2mp3 until next launch.\nTo stop this message, "
+              "\nScript will not retry updating MediaFetch until next launch.\nTo stop this message, "
               "set 'Update Checking' to false in the config menu.")
         pause()
 
     except Exception as error:
-        print("An unexpected error occured while trying to check for yt2mp3 updates!\n"
+        print("An unexpected error occured while trying to check for MediaFetch updates!\n"
               f"Error: {error}\nTo stop this message, set 'Update Checking' to false "
               "in the config menu.")
         pause()
@@ -140,7 +141,7 @@ def yt2mp3_update_check() -> None:
 
 def update_ytdlp() -> None:
     """
-    Checks PyPI for a newer vers of yt_dlp, prompts to update if one exists.
+    Checks PyPI for a newer version of yt_dlp, prompts to update if one exists.
     Important as youtube constantly changes anti-bot protection, so yt_dlp is
     always updating for this.
     """
@@ -190,7 +191,7 @@ def update_ytdlp() -> None:
         pause()
 
 
-def import_ytdlp() -> module:
+def import_ytdlp() -> ModuleType:
     # yt_dlp checking and setup
     try:
         import yt_dlp
@@ -225,7 +226,7 @@ def import_ytdlp() -> module:
             sys.exit(1)
 
    
-def download_video(yt_dlp: module, url: str, codec: str, quality: str, folder: str) -> None:
+def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folder: str) -> None:
     """
     Downloads audio from a YouTube URL using yt_dlp.
 
@@ -279,12 +280,12 @@ def download_video(yt_dlp: module, url: str, codec: str, quality: str, folder: s
 def menu() -> int:
     """Displays the main menu and captures the user's choice."""
     clear()
-    print("yt2mp3 - Download Youtube videos as audio files\n"
+    print("MediaFetch - Download Youtube videos as audio files\n"
           "\n1 - Download\n2 - Config\n3 - About\n4 - Quit\n")
     return(get_sanitized_num_input("> ", int, 1, 4))
 
 
-def downloader(yt_dlp: module, config_settings: dict[str, str]) -> None:
+def downloader(yt_dlp: ModuleType, config_settings: dict[str, str]) -> None:
     """Handles the download flow from the main menu."""
     clear()
     link = input("Enter YouTube URL (Video or Playlist): ")
@@ -296,7 +297,7 @@ def downloader(yt_dlp: module, config_settings: dict[str, str]) -> None:
 def config(config_settings: dict[str, str], config_path: Path) -> None:
     """Handles the configuration sub-menu, allowing the user to mutate settings."""
     clear()
-    print("yt2mp3 config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
+    print("MediaFetch config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
           "Download Folder")
     match get_sanitized_num_input("> ", int, 1, 3):
         case 1:
@@ -375,8 +376,8 @@ def config(config_settings: dict[str, str], config_path: Path) -> None:
 def about() -> None:
     """Displays information about the script."""
     clear()
-    print("About:\n\nyt2mp3 v1.0.0 by zonkedhobgoblin\n"
-          "https://github.com/ZonkedHobgoblin/yt2mp3\n\n"
+    print("About:\n\nMediaFetch v1.0.4 by zonkedhobgoblin\n"
+          "https://github.com/ZonkedHobgoblin/mediafetch\n\n"
           "Using yt_dlp, convert videos or playlists into audio"
           " files.\nCan be configured to change the output type.\n"
           "Chosen codecs and qualities are preferred, not guaranteed"
@@ -555,7 +556,7 @@ if __name__ == "__main__":
     config_path = script_path.parent / "config.json"
     config_settings = load_config(config_path)
     if config_settings["update"]:
-        yt2mp3_update_check()
+        mediafetch_update_check()
         update_ytdlp()
     yt_dlp = import_ytdlp()
     checknget_ffmpeg()
