@@ -120,8 +120,8 @@ This project is actively being developed. Upcoming features include:
 - [ ] [v1.5.0] **Standalone Executable**: Compiling the script into an executable file so it can be used without Python.
 - [ ] [v1.6.0] **Auto-Updating**: Allowing the executable to update itself if the user accepts. 
 - [ ] [v2.0.0] **GUI Migration**: Transitioning from a CLI to a full Graphical User Interface.
-- [ ] [v3.0.0] **TLocalisation**: Support for other languages
-- [ ] [v3.0.0] **Support beyond Youtube**: Support of more media sites, beyond just YouTube.
+- [ ] [v3.0.0] **Localisation**: Support for other languages
+- [ ] [v4.0.0] **Support beyond Youtube**: Support of more media sites, beyond just YouTube.
 ## ⚠️ Disclaimer
 This tool is for educational and personal archiving purposes only. Please respect YouTube's Terms of Service and the copyright of content creators. Do not use this tool to distribute copyrighted material.
 
