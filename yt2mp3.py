@@ -1,5 +1,5 @@
 """
-yt2mp3 v1.0.4 - 21/03/26
+anyaudio v1.0.4 - 21/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -14,8 +14,8 @@ import sys
 from pathlib import Path
 
 # Global settings for codec mapping
-YT2MP3_VER = "v1.0.4"
-REPO_URL = "https://github.com/ZonkedHobgoblin/yt2mp3/"
+ANYAUDIO_VER = "v1.0.4"
+REPO_URL = "https://github.com/zonkedhobgoblin/anyaudio/"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
 VORBIS_Q = ["128", "192"]
@@ -186,7 +186,7 @@ def download_video(yt_dlp: module, url: str, codec: str, quality: str, folder: s
 def menu() -> int:
     """Displays the main menu and captures the user's choice."""
     clear()
-    print("yt2mp3 - Download Youtube videos as audio files\n"
+    print("AnyAudio - Download Youtube videos as audio files\n"
           "\n1 - Download\n2 - Config\n3 - About\n4 - Quit\n")
     return(get_sanitized_num_input("> ", int, 1, 4))
 
@@ -203,7 +203,7 @@ def downloader(yt_dlp: module, config_settings: dict[str, str]) -> None:
 def config(config_settings: dict[str, str], config_path: Path) -> None:
     """Handles the configuration sub-menu, allowing the user to mutate settings."""
     clear()
-    print("yt2mp3 config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
+    print("AnyAudio config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
           "Download Folder")
     match get_sanitized_num_input("> ", int, 1, 3):
         case 1:
@@ -282,8 +282,8 @@ def config(config_settings: dict[str, str], config_path: Path) -> None:
 def about() -> None:
     """Displays information about the script."""
     clear()
-    print("About:\n\nyt2mp3 v1.0.0 by zonkedhobgoblin\n"
-          "https://github.com/ZonkedHobgoblin/yt2mp3\n\n"
+    print("About:\n\nAnyAudio v1.0.0 by zonkedhobgoblin\n"
+          "https://github.com/zonkedhobgoblin/AnyAudio\n\n"
           "Using yt_dlp, convert videos or playlists into audio"
           " files.\nCan be configured to change the output type.\n"
           "Chosen codecs and qualities are preferred, not guaranteed"
