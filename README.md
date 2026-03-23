@@ -1,4 +1,4 @@
-# yt2mp3 🎵
+# AnyAudio 🎵
 
 A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTube videos and playlists as audio files. Powered by `yt_dlp` and `FFmpeg`.
 
@@ -21,8 +21,8 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
    
    Download the release .py file, or you can clone the repo with `git`:
    ```
-   git clone https://github.com/ZonkedHobgoblin/yt2mp3
-   cd yt2mp3
+   git clone https://github.com/Zonkedhobgoblin/anyaudio
+   cd anyaudio
    ```
 
    That's it! The script can handle installing yt_dlp and FFmpeg itself. If you'd rather install it yourself, or the script fails, read the next steps below.
@@ -76,7 +76,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 ## Usage
    Run the script from your terminal (or just open it to terminal in a file viewer)
    ```bash
-   python yt2mp3.py
+   python anyaudio.py
    ```
 
 ## The menu
@@ -90,7 +90,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 ## Supported file types & qualities
 <details>
 <summary><b>Supported file types and their respective qualities</b></summary>
-These file types are supported by yt2mp3, and it will attempt to download files as your preferred type.
+These file types are supported by AnyAudio, and it will attempt to download files as your preferred type.
    
 <sup>*Please note: Even if saved as a lossless audio file or at a high bitrate, the true audio quality will remain limited by the original YouTube source stream.*</sup>
 
@@ -110,7 +110,7 @@ These file types are supported by yt2mp3, and it will attempt to download files 
 ## Roadmap
 This project is actively being developed. Upcoming features include:
 - [x] ~~[v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.~~
-- [ ] [v1.0.4] **Update notifictions**: If a new release (yt2mp3 or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.
+- [ ] [v1.0.4] **Update notifictions**: If a new release (AnyAudio or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.
 - [ ] [v1.0.6] **Tidying & Refactoring**: General tidying and cleanup of script.
 - [ ] [v1.0.8] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
 - [ ] [v1.1.0] **Video Formats**: Support to download videos in a range of formats, along with subtitles.
