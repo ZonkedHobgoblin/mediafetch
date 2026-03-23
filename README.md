@@ -1,4 +1,4 @@
-# AnyAudio 🎵
+# AVFetch 🎵
 
 A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTube videos and playlists as audio files. Powered by `yt_dlp` and `FFmpeg`.
 
