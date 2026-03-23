@@ -1,5 +1,8 @@
+######
+# Add update opt to config menu, also remove this
+######
 """
-anyaudio v1.0.4 - 21/03/26
+yt2mp3 v1.0.4 - 21/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -11,11 +14,14 @@ import platform
 import json
 import shutil
 import sys
+import urllib.request
+import urllib.error
+import importlib.metadata
 from pathlib import Path
 
 # Global settings for codec mapping
-ANYAUDIO_VER = "v1.0.4"
-REPO_URL = "https://github.com/zonkedhobgoblin/anyaudio/"
+YT2MP3_VER = "v1.0.4"
+REPO_URL = "https://github.com/ZonkedHobgoblin/yt2mp3/"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
 VORBIS_Q = ["128", "192"]
@@ -35,7 +41,7 @@ def clear() -> None:
 
 def pause() -> None:
     """Pauses the script and waits for user input before continuing."""
-    input("\nPress enter to continue . . . ")
+    input("\nPress enter to continue...")
 
 
 def get_sanitized_num_input(prompt: str,
@@ -100,6 +106,89 @@ def get_sanitized_str_input(prompt: str,
             continue
         return string_input
 
+#Defo can use some DRY with these next 2, MAYBE 3 modules
+def yt2mp3_update_check() -> None:
+    """
+    Ping Github api, check if newer release exists.
+    """
+    req = urllib.request.Request(REPO_URL, headers={"User-Agent": "yt2mp3"})
+
+    try:
+        with urllib.request.urlopen(req, timeout=3) as response:
+            data = json.loads(response.read().decode('utf-8'))
+            latest_version = data.get('tag_name')
+
+            if latest_version != YT2MP3_VER:
+                clear()
+                print("Update Available:\nA newer version of yt2mp3 has been released!\n"
+                      f"Current Version: {YT2MP3_VER}\nLatest Version: {latest_version}\n"
+                      "It is recommened you install the latest version, for reasons such"
+                      " as bug fixes.")
+                pause()
+    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+        print("Failed to connect to GitHub to check for updates. Are you connected to the internet?"
+              "\nScript will not retry updating yt2mp3 until next launch.\nTo stop this message, "
+              "set 'Update Checking' to false in the config menu.")
+        pause()
+
+    except Exception as error:
+        print("An unexpected error occured while trying to check for yt2mp3 updates!\n"
+              f"Error: {error}\nTo stop this message, set 'Update Checking' to false "
+              "in the config menu.")
+        pause()
+
+
+def update_ytdlp() -> None:
+    """
+    Checks PyPI for a newer vers of yt_dlp, prompts to update if one exists.
+    Important as youtube constantly changes anti-bot protection, so yt_dlp is
+    always updating for this.
+    """
+    try:
+        distribution("yt_dlp")
+        current_version = version("yt_dlp")
+
+        # Find latest version of yt_dlp on PyPI
+        url = "https://pypi.org/pypi/yt_dlp/json"
+        with urllib.request.urlopen(url, timeout=3) as response:
+            data = json.loads(response.read().decode('utf-8'))
+            latest_version = data['info']['version']
+
+        if latest_version != current_version:
+            clear()
+            print(f"A new version of yt_dlp is available!\nLocal version: {current_version}"
+                  f"\nLatest version: {latest_version}\n")
+            if get_sanitized_str_input("> ", ["y", "n"], True, True) == "y":
+                clear()
+                print("Attempting to install newest version of yt_dlp...")
+                subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "yt_dlp"],
+                               check=True)
+                print("\nSuccessfully installed latest version of yt_dlp!\n")
+                pause()
+
+            else:
+                clear()
+                print("yt_dlp will not be updated!\nEnsure to update yt_dlp if downloading fails.")
+                pause()
+        
+    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+        print("\nFailed to connect to PyPI to check for updates. Are you "
+              "connected to the internet?\nScript will not retry updating yt_dlp "
+              "until next launch.\nTo stop this message, set 'Update Checking' to false "
+              "in the config menu.")
+        pause()
+    except subprocess.CalledProcessError as error:
+        print(f"\nFailed to install the update for yt_dlp.\nError: {error}")
+        pause()
+        
+    except PackageNotFoundError:
+        # Nothing needs to be done, import_ytdlp runs after this
+        pass
+        
+    except Exception as error:
+        print(f"\nAn unexpected error occured!\nError: {error}")
+        pause()
+
 
 def import_ytdlp() -> module:
     # yt_dlp checking and setup
@@ -115,23 +204,27 @@ def import_ytdlp() -> module:
     
         if auto_install == 'y':
             try:
+                clear()
                 print("Attempting to install yt_dlp...")
-                # sys.executable ensures it uses the pip associated with the current Python environment
+                # sys.executable ensures it uses the pip associated with the current Python env
                 subprocess.run([sys.executable, "-m", "pip", "install", "yt_dlp"], check=True)
-                print("Successfully installed yt_dlp!\n")
+                print("\nSuccessfully installed yt_dlp!\n")
                 pause()
                 import yt_dlp  # Import it now that it's installed
                 return yt_dlp
             except Exception as error:
-                print(f"\nAuto-Install failed. Please open your terminal and run 'pip install yt_dlp'.\nError: {error}")
+                print(f"\nAuto-Install failed. Please open your terminal and run 'pip install "
+                      f"yt_dlp'.\nError: {error}")
                 pause()
                 sys.exit(1)
         else:
-            print("Please install yt_dlp manually to use this script. Open your terminal and run 'pip install yt_dlp'.")
+            clear()
+            print("Please install yt_dlp manually to use this script. Open your terminal and run "
+                  "'pip install yt_dlp'.")
             pause()
             sys.exit(1)
 
-            
+   
 def download_video(yt_dlp: module, url: str, codec: str, quality: str, folder: str) -> None:
     """
     Downloads audio from a YouTube URL using yt_dlp.
@@ -186,7 +279,7 @@ def download_video(yt_dlp: module, url: str, codec: str, quality: str, folder: s
 def menu() -> int:
     """Displays the main menu and captures the user's choice."""
     clear()
-    print("AnyAudio - Download Youtube videos as audio files\n"
+    print("yt2mp3 - Download Youtube videos as audio files\n"
           "\n1 - Download\n2 - Config\n3 - About\n4 - Quit\n")
     return(get_sanitized_num_input("> ", int, 1, 4))
 
@@ -203,7 +296,7 @@ def downloader(yt_dlp: module, config_settings: dict[str, str]) -> None:
 def config(config_settings: dict[str, str], config_path: Path) -> None:
     """Handles the configuration sub-menu, allowing the user to mutate settings."""
     clear()
-    print("AnyAudio config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
+    print("yt2mp3 config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
           "Download Folder")
     match get_sanitized_num_input("> ", int, 1, 3):
         case 1:
@@ -282,8 +375,8 @@ def config(config_settings: dict[str, str], config_path: Path) -> None:
 def about() -> None:
     """Displays information about the script."""
     clear()
-    print("About:\n\nAnyAudio v1.0.0 by zonkedhobgoblin\n"
-          "https://github.com/zonkedhobgoblin/AnyAudio\n\n"
+    print("About:\n\nyt2mp3 v1.0.0 by zonkedhobgoblin\n"
+          "https://github.com/ZonkedHobgoblin/yt2mp3\n\n"
           "Using yt_dlp, convert videos or playlists into audio"
           " files.\nCan be configured to change the output type.\n"
           "Chosen codecs and qualities are preferred, not guaranteed"
@@ -303,7 +396,7 @@ def save_config(config_settings: dict[str, str], config_path: Path) -> None:
         pause()
 
     
-def load_config(config_path: Path) -> dict[str, str]:
+def load_config(config_path: Path) -> dict[str, str] | dict[str, bool]:
     """
     Loads configuration from a JSON file. 
     If the file is missing or corrupted, writes and returns default settings.
@@ -311,7 +404,7 @@ def load_config(config_path: Path) -> dict[str, str]:
     Returns:
         dict: The loaded or default configuration settings.
     """
-    default_settings = {"codec": "mp3", "quality": "320", "folder": "downloads"}
+    default_settings = {"codec": "mp3", "quality": "320", "folder": "downloads", "update": True}
     try:
         # Make a new config file and dump the default settings in
         if not config_path.exists():
@@ -459,10 +552,13 @@ def check_py() -> None:
         
 if __name__ == "__main__":
     check_py()
-    yt_dlp = import_ytdlp()
-    checknget_ffmpeg()
     config_path = script_path.parent / "config.json"
     config_settings = load_config(config_path)
+    if config_settings["update"]:
+        yt2mp3_update_check()
+        update_ytdlp()
+    yt_dlp = import_ytdlp()
+    checknget_ffmpeg()
     while True:
         match menu():
             case 1:
