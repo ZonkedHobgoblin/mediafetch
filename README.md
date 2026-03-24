@@ -23,7 +23,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
    Download the release .py file, or you can clone the repo with `git`:
    ```
    git clone https://github.com/Zonkedhobgoblin/mediafetch
-   cd anyaudio
+   cd mediafetch
    ```
 
    That's it! The script can handle installing yt_dlp and FFmpeg itself. If you'd rather install it yourself, or the script fails, read the next steps below.
@@ -111,7 +111,7 @@ These file types are supported by MediaFetch, and it will attempt to download fi
 ## Roadmap
 This project is actively being developed. Upcoming features include:
 - [x] ~~[v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.~~
-- [ ] [v1.0.4] **Update notifictions**: If a new release (AnyAudio or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.
+- [ ] [v1.0.4] **Update notifictions**: If a new release (MediaFetch or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.
 - [ ] [v1.0.6] **Tidying & Refactoring**: General tidying and cleanup of script.
 - [ ] [v1.0.8] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
 - [ ] [v1.1.0] **Video Formats**: Support to download videos in a range of formats, along with subtitles.
