@@ -23,7 +23,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
    Download the release .py file, or you can clone the repo with `git`:
    ```
    git clone https://github.com/Zonkedhobgoblin/mediafetch
-   cd anyaudio
+   cd mediafetch
    ```
 
    That's it! The script can handle installing yt_dlp and FFmpeg itself. If you'd rather install it yourself, or the script fails, read the next steps below.
