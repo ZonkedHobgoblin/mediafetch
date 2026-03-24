@@ -1,8 +1,5 @@
-######
-# note to sekf add update opt to config menu, also remove this
-######
 """
-mediafetch v1.0.4 - 23/03/26
+mediafetch v1.0.4 - 24/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -16,9 +13,10 @@ import shutil
 import sys
 import urllib.request
 import urllib.error
-from types import ModuleTypeType
+from types import ModuleType
 from importlib.metadata import distribution, version, PackageNotFoundError
 from pathlib import Path
+from packaging.version import parse
 
 # Global settings for codec mapping
 MEDIAFETCH_VER = "v1.0.4"
@@ -118,8 +116,10 @@ def mediafetch_update_check() -> None:
         with urllib.request.urlopen(req, timeout=3) as response:
             data = json.loads(response.read().decode('utf-8'))
             latest_version = data.get('tag_name')
+            latest_version = parse(latest_version)
+            current_version = parse(MEDIAFETCH_VER)
 
-            if latest_version != MEDIAFETCH_VER:
+            if latest_version > current_version:
                 clear()
                 print("Update Available:\nA newer version of MediaFetch has been released!\n"
                       f"Current Version: {MEDIAFETCH_VER}\nLatest Version: {latest_version}\n"
@@ -146,16 +146,10 @@ def update_ytdlp() -> None:
     always updating for this.
     """
     try:
-        distribution("yt_dlp")
-        current_version = version("yt_dlp")
 
-        # Find latest version of yt_dlp on PyPI
-        url = "https://pypi.org/pypi/yt_dlp/json"
-        with urllib.request.urlopen(url, timeout=3) as response:
-            data = json.loads(response.read().decode('utf-8'))
-            latest_version = data['info']['version']
-
-        if latest_version != current_version:
+        
+        
+        if 1 == 0:#latest_version != current_version:
             clear()
             print(f"A new version of yt_dlp is available!\nLocal version: {current_version}"
                   f"\nLatest version: {latest_version}\n")
@@ -169,14 +163,14 @@ def update_ytdlp() -> None:
 
             else:
                 clear()
-                print("yt_dlp will not be updated!\nEnsure to update yt_dlp if downloading fails.")
+                print("yt_dlp cannot be updated!\nEnsure to update yt_dlp if audio downloading fails.")
                 pause()
         
-    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as error:
         print("\nFailed to connect to PyPI to check for updates. Are you "
               "connected to the internet?\nScript will not retry updating yt_dlp "
               "until next launch.\nTo stop this message, set 'Update Checking' to false "
-              "in the config menu.")
+              "in the config menu.", error)
         pause()
     except subprocess.CalledProcessError as error:
         print(f"\nFailed to install the update for yt_dlp.\nError: {error}")
@@ -192,7 +186,11 @@ def update_ytdlp() -> None:
 
 
 def import_ytdlp() -> ModuleType:
-    # yt_dlp checking and setup
+    """
+    Attempt to import yt_dlp
+    If not installed, asks the user if they want it auto-installed
+    Attempts to install, if fails tell the user to manually install
+    """
     try:
         import yt_dlp
         return yt_dlp
@@ -298,8 +296,8 @@ def config(config_settings: dict[str, str], config_path: Path) -> None:
     """Handles the configuration sub-menu, allowing the user to mutate settings."""
     clear()
     print("MediaFetch config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
-          "Download Folder")
-    match get_sanitized_num_input("> ", int, 1, 3):
+          "Download Folder\n4 - Update Checking")
+    match get_sanitized_num_input("> ", int, 1, 4):
         case 1:
             clear()
             print("1 - Audio File Type\nCurrent type selected:"
@@ -371,12 +369,22 @@ def config(config_settings: dict[str, str], config_path: Path) -> None:
             else:
                 print("Path formatted incorrectly!")
                 pause()
+        case 4:
+            clear()
+            print("4 - Update Checking\nEnable/Disable the script checking for updates on startup."
+                  f"\nCurrent status: {config_settings.get('update')}\nEnter a new status: (Y/N)")
+            opt = get_sanitized_str_input("> ", ["y", "n"], True, True)
+            config_settings.update({"update": opt == 'y'})
+            save_config(config_settings, config_path)
+            print(f"Update status changed! Now set to: {config_settings.get('update')}")
+            pause()
+
 
 
 def about() -> None:
     """Displays information about the script."""
     clear()
-    print("About:\n\nMediaFetch v1.0.4 by zonkedhobgoblin\n"
+    print(f"About:\n\nMediaFetch {MEDIAFETCH_VER} by zonkedhobgoblin\n"
           "https://github.com/ZonkedHobgoblin/mediafetch\n\n"
           "Using yt_dlp, convert videos or playlists into audio"
           " files.\nCan be configured to change the output type.\n"
@@ -557,7 +565,7 @@ if __name__ == "__main__":
     config_settings = load_config(config_path)
     if config_settings["update"]:
         mediafetch_update_check()
-        update_ytdlp()
+        #update_ytdlp()
     yt_dlp = import_ytdlp()
     checknget_ffmpeg()
     while True:
