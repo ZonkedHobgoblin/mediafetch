@@ -13,9 +13,8 @@ import shutil
 import sys
 import urllib.request
 import urllib.error
-import re
 from types import ModuleType
-from importlib.metadata import distribution, version, PackageNotFoundError
+from importlib.metadata import version, PackageNotFoundError
 from pathlib import Path
 
 # Global settings for codec mapping

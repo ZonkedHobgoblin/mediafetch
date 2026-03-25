@@ -1,0 +1,417 @@
+# Temp file to hold code
+
+# Top comment
+"""
+mediafetch v1.0.5 - 25/03/26
+By zonkedhobgoblin
+
+A command-line Python utility to download YouTube videos and playlists 
+as high-quality audio files using the yt_dlp library. Supports configurable 
+codecs and bitrates.
+"""
+import subprocess
+import platform
+import json
+import shutil
+import sys
+import urllib.request
+import urllib.error
+from types import ModuleType # For module hints
+from importlib.metadata import version, PackageNotFoundError
+from pathlib import Path
+
+# Global settings
+#----------------------------------------------------
+# Codec / Quality Settings
+MEDIAFETCH_VER = "v1.0.5"
+REPO_URL = "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest"
+MMA_Q = ["128", "192", "256", "320"]
+OPUS_Q = ["96", "128", "160"]
+VORBIS_Q = ["128", "192"]
+NA_Q = ["0"] # Used for lossless qualities so bitrate doesn't apply. (na = N/A)
+CODEC_TYPES = {"mp3":MMA_Q, "m4a":MMA_Q, "aac":MMA_Q, "opus":OPUS_Q,
+                   "vorbis":VORBIS_Q, "flac":NA_Q, "alac":NA_Q, "wav":NA_Q}
+#----------------------------------------------------
+# Config Settings
+valid_codecs = [*CODEC_TYPES]
+valid_qualities = {item for sublist in CODEC_TYPES.values() for item in sublist}
+script_path = Path(__file__).resolve()
+default_settings = {"codec": "mp3", "quality": "320", "folder": "downloads", "update": True}
+#----------------------------------------------------
+# Other
+os_name = platform.system()
+#----------------------------------------------------
+
+
+# Functions (To be refactored and "dried")
+#----------------------------------------------------
+# CLI stuff
+def clear() -> None:
+    """Clears the terminal screen based on the operating system."""
+    subprocess.run(('cls' if os_name == 'Windows' else 'clear'), shell=True)
+
+
+def pause() -> None:
+    """Pauses the script and waits for user input before continuing."""
+    input("\nPress enter to continue...")
+
+
+def get_sanitized_num_input(prompt: str,
+                            target_type: type,
+                            min_value: int | float| None = None,
+                            max_value: int | float | None = None) -> int | float:
+    """
+    Prompts the user for a numeric input and safely handles invalid data.
+
+    Args:
+        prompt (str): The text displayed to the user.
+        target_type (type): The expected Python type (usually `int` or `float`).
+        min_value (int/float, optional): The minimum allowed boundary.
+        max_value (int/float, optional): The maximum allowed boundary.
+
+    Returns:
+        The cleaned numeric input matching the target_type.
+    """
+    while True:
+        unclean_input = input(prompt)
+        try:
+            clean_input = target_type(unclean_input)
+            if min_value is not None and clean_input < min_value:
+                print(f"Error: Value cannot be below {min_value}.")
+                continue
+            if max_value is not None and clean_input > max_value:
+                print(f"Error: Value cannot be above {max_value}.")
+                continue
+            return clean_input
+        except ValueError:
+            type_name = "integer" if target_type == int else "number"
+            print(f"Error: Invalid input. Please enter a {type_name}.")
+
+
+def get_sanitized_str_input(prompt: str,
+                            string_list: list[str] | None = None,
+                            allow_anycase: bool = False,
+                            should_strip: bool = True) -> str:
+    """
+    Prompts the user for string input, sanitizes it, and restricts choices if needed.
+
+    Args:
+        prompt (str): The text displayed to the user.
+        string_list (list, optional): A list of valid exact string matches allowed.
+        allow_anycase (bool): If True, adherence to the list is not affected by caps.
+        should_strip (bool): If True, removes leading/trailing whitespace.
+
+    Returns:
+        str: The sanitized string input.
+    """
+    if string_list is not None and allow_anycase:
+        string_list = [item.lower() for item in string_list]
+    while True:
+        string_input = input(prompt)
+        if should_strip:
+            string_input = string_input.strip()
+        if allow_anycase:
+            string_input = string_input.lower()
+        if string_list is not None and string_input not in string_list:
+            print(f"Error: You must enter one of these options: ")
+            print(*string_list, sep = ', ')
+            continue
+        return string_input
+
+
+#----------------------------------------------------
+# Dependency & Updating stuff
+#---------------------------------------
+# Parsing & Getting from Github
+def parse(version_string: str) -> tuple[int, ...]:
+    """Converts a version string (x.x.x) into compareble tutples"""
+    clean_version = version_string.lstrip('vV')
+    return tuple(map(int, clean_version.split('.')))
+
+
+def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = True) -> list[bool, str]:
+    """
+    Ping Github api, check if newer release exists.
+    Return gives:
+    Bool - Needs update? True/False
+    Latest version of package (parsed)
+    Latest version of package (Un-Parsed)
+    """
+    req = urllib.request.Request(repo, headers={"User-Agent": "mediafetch"})
+
+    try:
+        with urllib.request.urlopen(req, timeout=3) as response:
+            data = json.loads(response.read().decode('utf-8'))
+            latest_version = data.get('tag_name')
+            latest_version = parse(latest_version)
+            current_version = parse(cur_ver)
+
+            if latest_version > current_version:
+                if not silent:
+                    clear()
+                    print(f"Update Available:\nA newer version of {package} has been released!\n"
+                          f"Current Version: {cur_ver}\nLatest Version: {data.get('tag_name')}\n"
+                          "It is recommended you install the latest version, for reasons such"
+                          " as bug fixes.")
+                    pause()
+                return [True, latest_version, data.get('tag_name')]
+            else:
+                return [False, latest_version, data.get('tag_name')]
+    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as error:
+        print("Failed to connect to GitHub to check for updates. Are you connected to the internet?"
+              f"\nScript will not retry updating {package} until next launch.\n"
+              f"Error: {error}\nTo stop this message, "
+              "set 'Update Checking' to false in the config menu.")
+        pause()
+
+    except Exception as error:
+        print(f"An unexpected error occured while trying to check for {package} updates!\n"
+              f"Error: {error}\nTo stop this message, set 'Update Checking' to false "
+              "in the config menu.")
+        pause()
+
+#---------------------------------------
+# yt_dlp Stuff
+def get_ytdlp(update_arg: int) -> ModuleType:
+    try:
+        clear()
+        if update_arg == 1:
+            print("Attempting to update module yt_dlp...")
+            subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "yt_dlp"], check=True)
+            print("\nSuccesfully updated yt_dlp!\n")
+        elif update_arg == 2:
+            clear()
+            print("Attempting to install module yt_dlp...")
+            # sys.executable ensures it uses the pip associated with the current Python env
+            subprocess.run([sys.executable, "-m", "pip", "install", "yt_dlp"], check=True)
+            print("\nSuccesfully installed yt_dlp!\n")
+        else:
+            print("Something went wrong.")
+            pause()
+            sys.exit(1)
+        pause()
+        import yt_dlp
+        return yt_dlp
+    except Exception as error:
+        print("\nAuto-Install failed. Please open your terminal and run this command:\n"
+              f"{'py' if os_name == 'Windows' else 'python3'} -m pip install "
+              f"{'--upgrade' if update_arg == 1 else ''} yt_dlp\n"
+              f"Error: {error}")
+        pause()
+        sys.exit(1)
+
+def check_ytdlp(can_update: bool) -> int:
+    """
+    We check yt_dlp's current status and return it:
+    0 = Up-To-Date, nothing should be done
+    1 = Out-Of-Date, needs updating
+    2 = Not-Installed, needs installing
+    Pass this to main and use match case we decide what to do
+    """
+    clear()
+    try:
+        ytdlp_ver = version('yt_dlp')
+        if can_update and (update_data := request_github_ver("yt_dlp", "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest",
+                              ytdlp_ver, True))[0]:
+            latest_version = update_data[2]
+            print(f"yt_dlp is outdated!\nCurrent: {ytdlp_ver}\n"
+                  f"Latest: {latest_version}\nWould you like this script to attempt "
+                  "installation of the latest version via pip? (Y/N)")
+            if get_sanitized_str_input("> ", ['y', 'n'], True, True) == 'y' :
+                return 1
+        return 0
+
+    except PackageNotFoundError:
+        print("Missing dependency! yt_dlp is not installed.\nWould you like "
+              "this script to attempt installation via pip? (Y/N)\n")
+        if get_sanitized_str_input("> ", ['y', 'n'], True,
+                                   True) == 'y' :
+            return 2
+        else:
+            print("\nyt_dlp is required to run MediaFetch!\n"
+                  "Please open your terminal and run this command:\n"
+                  f"{'py' if os_name == 'Windows' else 'python3'} -m pip install yt_dlp")
+            pause()
+            sys.exit(1)
+    
+    except Exception as error:
+        print("An error occured when checking for yt_dlp's version!\n"
+              f"Error: {error}")
+        pause()
+        sys.exit(1)
+
+
+#---------------------------------------
+# FFmpeg stuff
+def checknget_ffmpeg() -> bool:
+    """
+    Checks system path for FFmpeg dependency. 
+    If missing, prompts the user with OS-specific automated installation options.
+    """
+    if shutil.which('ffmpeg') is not None:
+        return True
+    
+    clear()
+    print("Missing dependency! FFmpeg is missing\nyt_dlp requires FFmpeg to "
+          "extract and convert audio files.")
+    auto_install = get_sanitized_str_input("Would you like this script to "
+                                           "attempt installation, or view "
+                                           "installation instructions "
+                                           "yourself? (Y/N)\n> "
+                                           , ["y", "n"], True, True)
+    clear()
+    match os_name:
+        case "Windows":
+            if auto_install == "y":
+                try:
+                    print("Attempting auto install via winget...")
+                    subprocess.run(['winget', 'install', 'ffmpeg',
+                                    '--accept-package-agreements',
+                                    '--accept-source-agreements'],
+                                   check=True)
+                    print("\nFFmpeg succesfully installed! Script will "
+                          "restart...")
+                    pause()
+                    subprocess.Popen(['start', 'cmd', '/K', sys.executable,
+                                      script_path])
+                    sys.exit(0)
+                except Exception as error:
+                    print("\nAuto-Install error, please review manual "
+                          f"instructions! (Is winget missing?)\nError: {error}")
+                    pause()
+            clear()
+            print("Manual FFmpeg installation:\nOption 1: Open CMD and "
+                  "run: winget install ffmpeg\nOption 2: Download from: "
+                  "https://github.com/BtbN/FFmpeg-Builds/releases")
+            pause()
+            sys.exit(1)
+            
+        case "Darwin":
+            has_brew = shutil.which("brew") is not None
+            if auto_install == "y":
+                if has_brew:
+                    try:
+                        print("Attempting auto install via Homebrew...")
+                        subprocess.run(['brew', 'install', 'ffmpeg'], check=True)
+                        print("\nFFmpeg succesfully installed! Script will "
+                              "restart...")
+                        pause()
+                        applescript = ('tell application "Terminal" to do script '
+                        f'"{sys.executable} {script_path}"')
+                        subprocess.Popen(['osascript', '-e', applescript])
+                        sys.exit(0)
+                    except Exception as error:
+                        print("\nAuto-Install error, please review manual "
+                              f"instructions!\nError:{error}")
+                        pause()
+                else:
+                    print("Homebrew was not found, Please review manual "
+                          "instructions!")
+                    pause()
+                
+            clear()
+            print("Manual FFmpeg installation:\nStep 1. Install Homebrew if "
+                  "missing: https://brew.sh/\nStep 2. Open Terminal and run: "
+                  "brew install ffmpeg")
+            pause()
+            sys.exit(1)
+
+        case "Linux":
+            if auto_install == "y":
+                print("Attempting auto install via sudo apt...\n"
+                      "NOTE: You may be prompted to enter your sudo password "
+                      "below.")
+                try:
+                    subprocess.run(['sudo', 'apt', 'install', '-y', 'ffmpeg'],
+                                   check=True)
+                    if shutil.which("gnome-shell") is not None:
+                        print("\nFFmpeg succesfully installed! Script will "
+                              "restart...")
+                        pause()
+                        subprocess.Popen(['gnome-terminal', '--',
+                                          sys.executable, script_path])
+                        sys.exit(1)
+                    else:
+                        print("\nFFmpeg succesfully installed! Please open the"
+                              " script again...")
+                        pause()
+                        sys.exit(1)
+                except Exception as error:
+                    print("\nAuto-Install error, please review manual "
+                          f"instructions!\nError: {error}")
+                    pause()
+            clear()
+            print("Manual FFmpeg installation:\nDebian/Ubuntu: sudo apt install"
+                  " ffmpeg\nArch Linux:  sudo pacman -S ffmpeg\nFedora:      "
+                  "sudo dnf install ffmpeg")
+            pause()
+            sys.exit(1)
+        case _:
+            clear()
+            print("\nPossibly unsupported operating system!\nPlease search "
+                  "online for: 'How to install FFmpeg on (Your OS)'")
+            pause()
+            sys.exit(1)
+
+
+#---------------------------------------
+# Python Version Checking
+def check_py() -> None:
+    """Ensures the script is running on a compatible version of Python."""
+    if sys.version_info < (3, 10):
+        print("This script requires Python 3.10 or higher!")
+        pause()
+        sys.exit(0)
+
+
+#----------------------------------------------------
+# Downloading
+def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folder: str) -> None:
+    """
+    Downloads audio from a YouTube URL using yt_dlp.
+
+    Args:
+        url (str): The YouTube video or playlist link.
+        codec (str): The target audio format (e.g., 'mp3', 'flac').
+        quality (str): The target bitrate (e.g., '256', '320').
+        folder (str): The relative or absolute path to save the file.
+    """
+    ydl_opts = {
+        # Audio Settings
+        'format': 'bestaudio/best',
+        'outtmpl': f'{folder}/%(title)s.%(ext)s', # Save in a downloads folder
+        'postprocessors': [{
+            'key': "FFmpegExtractAudio",
+            'preferredcodec': codec,
+            'preferredquality': quality,
+        }],
+        
+        # Pretending to be the Android App (Instead of a web browser) stops
+        # "Signature solving" and "n challenges" issues when downloading
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'ios'],
+            }
+        },
+
+        'quiet': False,
+        'no_warnings': True,
+    }
+
+    try:
+        # Create the downloads folder if it doesn't exist in the current dir
+        Path(folder).mkdir(parents=True, exist_ok=True)
+
+        print(f"Downloading: {url}")
+        
+        # Pass the ydl_opts dict to the downloader
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.extract_info(url, download=True)
+            
+        print("Downloading finished! \n")
+        
+    except yt_dlp.utils.DownloadError as error:
+        print(f"yt_dlp encountered a download error! Error: {error}\n")
+        
+    except Exception as error:
+        print(f"Failed to download. Error: {error}\n")
