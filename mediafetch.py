@@ -13,13 +13,14 @@ import shutil
 import sys
 import urllib.request
 import urllib.error
+import re
 from types import ModuleType
 from importlib.metadata import distribution, version, PackageNotFoundError
 from pathlib import Path
 from packaging.version import parse
 
 # Global settings for codec mapping
-MEDIAFETCH_VER = "v1.0.4"
+MEDIAFETCH_VER = "v1.0.2"
 REPO_URL = "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
@@ -139,89 +140,96 @@ def mediafetch_update_check() -> None:
         pause()
 
 
-def update_ytdlp() -> None:
-    """
-    Checks PyPI for a newer version of yt_dlp, prompts to update if one exists.
-    Important as youtube constantly changes anti-bot protection, so yt_dlp is
-    always updating for this.
-    """
-    try:
 
-        
-        
-        if 1 == 0:#latest_version != current_version:
+# Next 3 modules could probably be changed to fit DRY better
+def get_ytdlp(update_arg: int) -> ModuleType:
+    try:
+        clear()
+        if update_arg == 1:
+            print("Attempting to update module yt_dlp...")
+            subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "yt_dlp"], check=True)
+            print("\nSuccesfully updated yt_dlp!\n")
+        elif update_arg == 2:
             clear()
-            print(f"A new version of yt_dlp is available!\nLocal version: {current_version}"
-                  f"\nLatest version: {latest_version}\n")
-            if get_sanitized_str_input("> ", ["y", "n"], True, True) == "y":
-                clear()
-                print("Attempting to install newest version of yt_dlp...")
-                subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "yt_dlp"],
-                               check=True)
-                print("\nSuccessfully installed latest version of yt_dlp!\n")
-                pause()
-
-            else:
-                clear()
-                print("yt_dlp cannot be updated!\nEnsure to update yt_dlp if audio downloading fails.")
-                pause()
-        
-    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as error:
-        print("\nFailed to connect to PyPI to check for updates. Are you "
-              "connected to the internet?\nScript will not retry updating yt_dlp "
-              "until next launch.\nTo stop this message, set 'Update Checking' to false "
-              "in the config menu.", error)
-        pause()
-    except subprocess.CalledProcessError as error:
-        print(f"\nFailed to install the update for yt_dlp.\nError: {error}")
-        pause()
-        
-    except PackageNotFoundError:
-        # Nothing needs to be done, import_ytdlp runs after this
-        pass
-        
-    except Exception as error:
-        print(f"\nAn unexpected error occured!\nError: {error}")
-        pause()
-
-
-def import_ytdlp() -> ModuleType:
-    """
-    Attempt to import yt_dlp
-    If not installed, asks the user if they want it auto-installed
-    Attempts to install, if fails tell the user to manually install
-    """
-    try:
-        import yt_dlp
-        return yt_dlp
-    except ImportError:
-        print("Missing dependency! yt_dlp is not installed.")
-        auto_install = get_sanitized_str_input("Would you like this script to "
-                                               "attempt installation via pip? "
-                                               "(Y/N)\n> ", ['y', 'n'], True,
-                                               True)
-    
-        if auto_install == 'y':
-            try:
-                clear()
-                print("Attempting to install yt_dlp...")
-                # sys.executable ensures it uses the pip associated with the current Python env
-                subprocess.run([sys.executable, "-m", "pip", "install", "yt_dlp"], check=True)
-                print("\nSuccessfully installed yt_dlp!\n")
-                pause()
-                import yt_dlp  # Import it now that it's installed
-                return yt_dlp
-            except Exception as error:
-                print(f"\nAuto-Install failed. Please open your terminal and run 'pip install "
-                      f"yt_dlp'.\nError: {error}")
-                pause()
-                sys.exit(1)
+            print("Attempting to install module yt_dlp...")
+            # sys.executable ensures it uses the pip associated with the current Python env
+            subprocess.run([sys.executable, "-m", "pip", "install", "yt_dlp"], check=True)
+            print("\nSuccesfully installed yt_dlp!\n")
         else:
-            clear()
-            print("Please install yt_dlp manually to use this script. Open your terminal and run "
-                  "'pip install yt_dlp'.")
+            print("Something went wrong.")
             pause()
             sys.exit(1)
+        pause()
+        import yt_dlp
+        return yt_dlp
+    except Exception as error:
+        print("\nAuto-Install failed. Please open your terminal and run this command:\n"
+              f"{'py' if os_name == 'Windows' else 'python3'} -m pip install "
+              f"{'--upgrade' if update_arg == 1 else ''} yt_dlp\n"
+              f"Error: {error}")
+        pause()
+        sys.exit(1)
+
+
+def check_ytdlp(can_update: bool) -> int:
+    """
+    We check yt_dlp's current status and return it:
+    0 = Up-To-Date, nothing should be done
+    1 = Out-Of-Date, needs updating
+    2 = Not-Installed, needs installing
+    Pass this to main and use match case we decide what to do
+    """
+    clear()
+    pip_executable = sys.executable.replace("pythonw.exe", "python.exe")
+    try:
+        print("Checking yt_dlp status")
+        result = subprocess.run(
+            [pip_executable, "-m", "pip", "index", "versions", "yt_dlp"],
+            capture_output=True, text=True, check=True
+        )
+        clear()
+
+        matched = [re.search(r"LATEST:\s+([\d\.]+)", result.stdout), re.search(r"INSTALLED:\s+([\d\.]+)", result.stdout)]
+        if all(matched):
+            # yt_dlp is installed
+            latest_version = matched[0].group(1)
+            current_version = matched[1].group(1)
+
+        elif matched[0]:
+            # yt_dlp isnt installed
+            if get_sanitized_str_input("Missing dependency! yt_dlp is not installed.\nWould you like this script to "
+                                               "attempt installation via pip? "
+                                               "(Y/N)\n> ", ['y', 'n'], True,
+                                               True) == 'y' :
+                return 2
+            else:
+                print("\nyt_dlp is required to run MediaFetch!\n"
+                      "Please open your terminal and run this command:\n"
+                      f"{'py' if os_name == 'Windows' else 'python3'} -m pip install yt_dlp")
+                pause()
+                sys.exit(1)
+
+        else:
+            raise PackageNotFoundError("Couldn't get LATEST and INSTALLED versions of yt_dlp!")
+
+        if parse(current_version) == parse(latest_version) and can_update == True:
+            if get_sanitized_str_input("yt_dlp is outdated!\nWould you like this script to "
+                                       "attempt installation of the latest version via pip? "
+                                       "(Y/N)\n> ", ['y', 'n'], True,
+                                       True) == 'y' :
+                return 1
+            else:
+                return 0
+
+        else:
+            return 0
+
+    except Exception as error:
+        print("An error occured when checking for yt_dlp's version!\n"
+              f"Error: {error}")
+        pause()
+        sys.exit(0)
+
 
    
 def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folder: str) -> None:
@@ -565,8 +573,12 @@ if __name__ == "__main__":
     config_settings = load_config(config_path)
     if config_settings["update"]:
         mediafetch_update_check()
-        #update_ytdlp()
-    yt_dlp = import_ytdlp()
+    match check_ytdlp(config_settings["update"]):
+        case 1 | 2 as status:
+            yt_dlp = get_ytdlp(status, config_settings["update"])
+        case 0:
+            import yt_dlp
+            pass
     checknget_ffmpeg()
     while True:
         match menu():
