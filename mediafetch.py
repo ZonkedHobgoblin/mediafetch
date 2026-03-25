@@ -106,35 +106,43 @@ def get_sanitized_str_input(prompt: str,
             continue
         return string_input
 
-#Defo can use some DRY with these next 2, MAYBE 3 ModuleTypes
-def mediafetch_update_check() -> None:
+#Defo can use some DRY with these next 2, MAYBE 3 functions
+def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = True) -> list[bool, str, str]:
     """
     Ping Github api, check if newer release exists.
+    Return gives:
+    Bool - Needs update? True/False
+    Current version of package (parsed)
+    Latest version of package (parsed)
     """
-    req = urllib.request.Request(REPO_URL, headers={"User-Agent": "mediafetch"})
+    req = urllib.request.Request(repo, headers={"User-Agent": "mediafetch"})
 
     try:
         with urllib.request.urlopen(req, timeout=3) as response:
             data = json.loads(response.read().decode('utf-8'))
             latest_version = data.get('tag_name')
             latest_version = parse(latest_version)
-            current_version = parse(MEDIAFETCH_VER)
+            current_version = parse(cur_ver)
 
             if latest_version > current_version:
-                clear()
-                print("Update Available:\nA newer version of MediaFetch has been released!\n"
-                      f"Current Version: {MEDIAFETCH_VER}\nLatest Version: {latest_version}\n"
-                      "It is recommended you install the latest version, for reasons such"
-                      " as bug fixes.")
-                pause()
+                if not silent:
+                    clear()
+                    print(f"Update Available:\nA newer version of {package} has been released!\n"
+                          f"Current Version: {cur_ver}\nLatest Version: {latest_version}\n"
+                          "It is recommended you install the latest version, for reasons such"
+                          " as bug fixes.")
+                    pause()
+                return [True, current_version, latest_version]
+            else:
+                return [False, current_version, latest_version]
     except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
         print("Failed to connect to GitHub to check for updates. Are you connected to the internet?"
-              "\nScript will not retry updating MediaFetch until next launch.\nTo stop this message, "
+              "\nScript will not retry updating {package} until next launch.\nTo stop this message, "
               "set 'Update Checking' to false in the config menu.")
         pause()
 
     except Exception as error:
-        print("An unexpected error occured while trying to check for MediaFetch updates!\n"
+        print(f"An unexpected error occured while trying to check for {package} updates!\n"
               f"Error: {error}\nTo stop this message, set 'Update Checking' to false "
               "in the config menu.")
         pause()
@@ -182,18 +190,7 @@ def check_ytdlp(can_update: bool) -> int:
     clear()
     pip_executable = sys.executable.replace("pythonw.exe", "python.exe")
     try:
-        print("Checking yt_dlp status")
-        result = subprocess.run(
-            [pip_executable, "-m", "pip", "index", "versions", "yt_dlp"],
-            capture_output=True, text=True, check=True
-        )
-        clear()
-
-        matched = [re.search(r"LATEST:\s+([\d\.]+)", result.stdout), re.search(r"INSTALLED:\s+([\d\.]+)", result.stdout)]
-        if all(matched):
-            # yt_dlp is installed
-            latest_version = matched[0].group(1)
-            current_version = matched[1].group(1)
+        request_github_ver
 
         elif matched[0]:
             # yt_dlp isnt installed
@@ -213,10 +210,10 @@ def check_ytdlp(can_update: bool) -> int:
             raise PackageNotFoundError("Couldn't get LATEST and INSTALLED versions of yt_dlp!")
 
         if parse(current_version) < parse(latest_version) and can_update == True:
-            if get_sanitized_str_input("yt_dlp is outdated!\nWould you like this script to "
-                                       "attempt installation of the latest version via pip? "
-                                       "(Y/N)\n> ", ['y', 'n'], True,
-                                       True) == 'y' :
+            print(f"yt_dlp is outdated!\nCurrent: {current_version}\n"
+                  f"Latest: {latest_version}\nWould you like this script to attempt "
+                  "installation of the latest version via pip? (Y/N)")
+            if get_sanitized_str_input("> ", ['y', 'n'], True, True) == 'y' :
                 return 1
             else:
                 return 0
@@ -567,7 +564,7 @@ def check_py() -> None:
         sys.exit(0)
 
         
-if __name__ == "__main__":
+if 1 == 2 and __name__ == "__main__":
     check_py()
     config_path = script_path.parent / "config.json"
     config_settings = load_config(config_path)
