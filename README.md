@@ -113,15 +113,16 @@ This project is actively being developed. Upcoming features include:
 - [x] ~~[v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.~~
 - [ ] [v1.0.4] **Update notifictions**: If a new release (MediaFetch or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.
 - [ ] [v1.0.6] **Tidying & Refactoring**: General tidying and cleanup of script.
-- [ ] [v1.0.8] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
-- [ ] [v1.1.0] **Video Formats**: Support to download videos in a range of formats, along with subtitles.
-- [ ] [v1.2.0] **Cookie passing**: Optional support to use your browser cookies. For YouTube Premium users, this allows access to higher audio qualities.
-- [ ] [v1.3.0] **Batch Downloading**: Support for downloading entire channels, from .txts containing links, or inputting multiple URLs (No playlist needed).
-- [ ] [v1.4.0] **Download Persistence**: Resuming interrupted batch downloads from where it left off.
-- [ ] [v1.5.0] **Standalone Executable**: Compiling the script into an executable file so it can be used without Python.
-- [ ] [v1.6.0] **Auto-Updating**: Allowing the executable to update itself if the user accepts. 
+- [ ] [v1.0.8] **Internationalization**: i18n to move all strings into seperate files, for better DRY and future localisation.
+- [ ] v[1.1.0] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
+- [ ] [v1.2.0] **Video Formats**: Support to download videos in a range of formats, along with subtitles.
+- [ ] [v1.3.0] **Cookie passing**: Optional support to use your browser cookies. For YouTube Premium users, this allows access to higher audio qualities.
+- [ ] [v1.4.0] **Batch Downloading**: Support for downloading entire channels, from .txts containing links, or inputting multiple URLs (No playlist needed).
+- [ ] [v1.5.0] **Download Persistence**: Resuming interrupted batch downloads from where it left off.
+- [ ] [v1.6.0] **Standalone Executable**: Compiling the script into an executable file so it can be used without Python.
+- [ ] [v1.7.0] **Auto-Updating**: Allowing the executable to update itself if the user accepts. 
 - [ ] [v2.0.0] **GUI Migration**: Transitioning from a CLI to a full Graphical User Interface.
-- [ ] [v3.0.0] **Localisation**: Support for other languages
+- [ ] [v3.0.0] **Localisation**: Support for other languages.
 - [ ] [v4.0.0] **Support beyond Youtube**: Support of more media sites, beyond just YouTube.
 ## ⚠️ Disclaimer
 This tool is for educational and personal archiving purposes only. Please respect YouTube's Terms of Service and the copyright of content creators. Do not use this tool to distribute copyrighted material.
