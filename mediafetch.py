@@ -20,7 +20,7 @@ from pathlib import Path
 from packaging.version import parse
 
 # Global settings for codec mapping
-MEDIAFETCH_VER = "v1.0.2"
+MEDIAFETCH_VER = "v1.0.4"
 REPO_URL = "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
@@ -212,7 +212,7 @@ def check_ytdlp(can_update: bool) -> int:
         else:
             raise PackageNotFoundError("Couldn't get LATEST and INSTALLED versions of yt_dlp!")
 
-        if parse(current_version) == parse(latest_version) and can_update == True:
+        if parse(current_version) < parse(latest_version) and can_update == True:
             if get_sanitized_str_input("yt_dlp is outdated!\nWould you like this script to "
                                        "attempt installation of the latest version via pip? "
                                        "(Y/N)\n> ", ['y', 'n'], True,
