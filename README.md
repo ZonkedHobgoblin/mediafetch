@@ -5,10 +5,12 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 ## Features
 
 * **Interactive CLI Menu:** Easy-to-use terminal interface for downloading, configuring, and managing audio formats.
+* **Playlist suppor:** Download not just single videos, but entire playlists too.
 * **Dynamic Configuration:** Set your preferred audio codec (MP3, FLAC, WAV, Opus, etc.) and quality. The script actively prevents invalid bitrate/codec combinations.
 * **Automated Dependency Management:** Missing FFmpeg or yt_dlp? No problem. The script detects your OS (Windows, macOS, Linux) and can automatically attempt to install FFmpeg, using `winget`, `brew`, or `apt`, or `pip` for yt_dlp.
 * **State Management:** Saves your download directory and preferred formats to a local `config.json` file.
 * **Anti-Bot Spoofing:** Conditionally utilizes mobile client spoofing to bypass YouTube's bot-protection algorithms.
+* **Update checking:** Check for updates to either the script, or yt_dlp. (With auto-updating for yt_dlp!)
 
 ## Prerequisites
 
@@ -111,7 +113,7 @@ These file types are supported by MediaFetch, and it will attempt to download fi
 ## Roadmap
 This project is actively being developed. Upcoming features include:
 - [x] ~~[v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.~~
-- [ ] [v1.0.4] **Update notifictions**: If a new release (MediaFetch or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.
+- [x] ~~[v1.0.4] **Update notifictions**: If a new release (MediaFetch or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.~~
 - [ ] [v1.0.6] **Tidying & Refactoring**: General tidying and cleanup of script.
 - [ ] [v1.0.8] **Internationalization**: i18n to move all strings into seperate files, for better DRY and future localisation.
 - [ ] v[1.1.0] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
