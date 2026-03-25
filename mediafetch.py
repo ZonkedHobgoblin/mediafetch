@@ -1,5 +1,5 @@
 """
-mediafetch v1.0.4 - 25/03/26
+mediafetch v1.0.5 - 25/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -17,10 +17,9 @@ import re
 from types import ModuleType
 from importlib.metadata import distribution, version, PackageNotFoundError
 from pathlib import Path
-from packaging.version import parse
 
 # Global settings for codec mapping
-MEDIAFETCH_VER = "v1.0.4"
+MEDIAFETCH_VER = "v1.0.5"
 REPO_URL = "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
@@ -106,6 +105,13 @@ def get_sanitized_str_input(prompt: str,
             continue
         return string_input
 
+
+def parse(version_string: str) -> tuple[int, ...]:
+    """Converts a version string (x.x.x) into compareble tutples"""
+    clean_version = version_string.lstrip('vV')
+    return tuple(map(int, clean_version.split('.')))
+
+
 #Defo can use some DRY with these next 2, MAYBE 3 functions
 def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = True) -> list[bool, str]:
     """
@@ -128,7 +134,7 @@ def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = Tru
                 if not silent:
                     clear()
                     print(f"Update Available:\nA newer version of {package} has been released!\n"
-                          f"Current Version: {cur_ver}\nLatest Version: {latest_version}\n"
+                          f"Current Version: {cur_ver}\nLatest Version: {data.get('tag_name')}\n"
                           "It is recommended you install the latest version, for reasons such"
                           " as bug fixes.")
                     pause()
