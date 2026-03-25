@@ -111,7 +111,7 @@ These file types are supported by MediaFetch, and it will attempt to download fi
 ## Roadmap
 This project is actively being developed. Upcoming features include:
 - [x] ~~[v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.~~
-- [ ] [v1.0.4] **Update notifictions**: If a new release (MediaFetch or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.
+- [x] ~~[v1.0.4] **Update notifictions**: If a new release (MediaFetch or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.~~
 - [ ] [v1.0.6] **Tidying & Refactoring**: General tidying and cleanup of script.
 - [ ] [v1.0.8] **Internationalization**: i18n to move all strings into seperate files, for better DRY and future localisation.
 - [ ] v[1.1.0] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
