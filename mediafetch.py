@@ -1,5 +1,5 @@
 """
-mediafetch v1.0.4 - 24/03/26
+mediafetch v1.0.4 - 25/03/26
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -107,13 +107,13 @@ def get_sanitized_str_input(prompt: str,
         return string_input
 
 #Defo can use some DRY with these next 2, MAYBE 3 functions
-def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = True) -> list[bool, str, str]:
+def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = True) -> list[bool, str]:
     """
     Ping Github api, check if newer release exists.
     Return gives:
     Bool - Needs update? True/False
-    Current version of package (parsed)
     Latest version of package (parsed)
+    Latest version of package (Un-Parsed)
     """
     req = urllib.request.Request(repo, headers={"User-Agent": "mediafetch"})
 
@@ -132,12 +132,13 @@ def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = Tru
                           "It is recommended you install the latest version, for reasons such"
                           " as bug fixes.")
                     pause()
-                return [True, current_version, latest_version]
+                return [True, latest_version, data.get('tag_name')]
             else:
-                return [False, current_version, latest_version]
-    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+                return [False, latest_version, data.get('tag_name')]
+    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as error:
         print("Failed to connect to GitHub to check for updates. Are you connected to the internet?"
-              "\nScript will not retry updating {package} until next launch.\nTo stop this message, "
+              f"\nScript will not retry updating {package} until next launch.\n"
+              f"Error: {error}\nTo stop this message, "
               "set 'Update Checking' to false in the config menu.")
         pause()
 
@@ -147,9 +148,7 @@ def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = Tru
               "in the config menu.")
         pause()
 
-
-
-# Next 3 modules could probably be changed to fit DRY better
+#needs dry for sure
 def get_ytdlp(update_arg: int) -> ModuleType:
     try:
         clear()
@@ -188,44 +187,36 @@ def check_ytdlp(can_update: bool) -> int:
     Pass this to main and use match case we decide what to do
     """
     clear()
-    pip_executable = sys.executable.replace("pythonw.exe", "python.exe")
     try:
-        request_github_ver
-
-        elif matched[0]:
-            # yt_dlp isnt installed
-            if get_sanitized_str_input("Missing dependency! yt_dlp is not installed.\nWould you like this script to "
-                                               "attempt installation via pip? "
-                                               "(Y/N)\n> ", ['y', 'n'], True,
-                                               True) == 'y' :
-                return 2
-            else:
-                print("\nyt_dlp is required to run MediaFetch!\n"
-                      "Please open your terminal and run this command:\n"
-                      f"{'py' if os_name == 'Windows' else 'python3'} -m pip install yt_dlp")
-                pause()
-                sys.exit(1)
-
-        else:
-            raise PackageNotFoundError("Couldn't get LATEST and INSTALLED versions of yt_dlp!")
-
-        if parse(current_version) < parse(latest_version) and can_update == True:
-            print(f"yt_dlp is outdated!\nCurrent: {current_version}\n"
+        ytdlp_ver = version('yt_dlp')
+        if can_update and (update_data := request_github_ver("yt_dlp", "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest",
+                              ytdlp_ver, True))[0]:
+            latest_version = update_data[2]
+            print(f"yt_dlp is outdated!\nCurrent: {ytdlp_ver}\n"
                   f"Latest: {latest_version}\nWould you like this script to attempt "
                   "installation of the latest version via pip? (Y/N)")
             if get_sanitized_str_input("> ", ['y', 'n'], True, True) == 'y' :
                 return 1
-            else:
-                return 0
+        return 0
 
+    except PackageNotFoundError:
+        print("Missing dependency! yt_dlp is not installed.\nWould you like "
+              "this script to attempt installation via pip? (Y/N)\n")
+        if get_sanitized_str_input("> ", ['y', 'n'], True,
+                                   True) == 'y' :
+            return 2
         else:
-            return 0
-
+            print("\nyt_dlp is required to run MediaFetch!\n"
+                  "Please open your terminal and run this command:\n"
+                  f"{'py' if os_name == 'Windows' else 'python3'} -m pip install yt_dlp")
+            pause()
+            sys.exit(1)
+    
     except Exception as error:
         print("An error occured when checking for yt_dlp's version!\n"
               f"Error: {error}")
         pause()
-        sys.exit(0)
+        sys.exit(1)
 
 
    
@@ -564,15 +555,16 @@ def check_py() -> None:
         sys.exit(0)
 
         
-if 1 == 2 and __name__ == "__main__":
+if  __name__ == "__main__":
     check_py()
     config_path = script_path.parent / "config.json"
     config_settings = load_config(config_path)
     if config_settings["update"]:
-        mediafetch_update_check()
+        request_github_ver("MediaFetch", "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest",
+                           MEDIAFETCH_VER, False)
     match check_ytdlp(config_settings["update"]):
         case 1 | 2 as status:
-            yt_dlp = get_ytdlp(status, config_settings["update"])
+            yt_dlp = get_ytdlp(status)
         case 0:
             import yt_dlp
             pass
