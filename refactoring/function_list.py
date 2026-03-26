@@ -415,3 +415,200 @@ def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folde
         
     except Exception as error:
         print(f"Failed to download. Error: {error}\n")
+
+
+#----------------------------------------------------
+# Menu Stuff
+def about() -> None:
+    """Displays information about the script."""
+    clear()
+    print(f"About:\n\nMediaFetch {MEDIAFETCH_VER} by zonkedhobgoblin\n"
+          "https://github.com/ZonkedHobgoblin/mediafetch\n\n"
+          "Using yt_dlp, convert videos or playlists into audio"
+          " files.\nCan be configured to change the output type.\n"
+          "Chosen codecs and qualities are preferred, not guaranteed"
+          " to be downloaded as.\nUsually, this only applies to qualities.\n"
+          "Ensure FFmpeg is set up before using.\n\n")
+    pause()
+
+def downloader(yt_dlp: ModuleType, config_settings: dict[str, str]) -> None:
+    """Handles the download flow from the main menu."""
+    clear()
+    link = input("Enter YouTube URL (Video or Playlist): ")
+    download_video(yt_dlp, link, config_settings["codec"], config_settings["quality"],
+                   config_settings["folder"])
+    pause()
+
+def menu() -> int:
+    """Displays the main menu and captures the user's choice."""
+    clear()
+    print("MediaFetch - Download Youtube videos as audio files\n"
+          "\n1 - Download\n2 - Config\n3 - About\n4 - Quit\n")
+    return(get_sanitized_num_input("> ", int, 1, 4))
+
+
+def config(config_settings: dict[str, str], config_path: Path) -> None:
+    """Handles the configuration sub-menu, allowing the user to mutate settings."""
+    clear()
+    print("MediaFetch config\n1 - Audio File Type\n2 - Audio Quality\n3 - "
+          "Download Folder\n4 - Update Checking")
+    match get_sanitized_num_input("> ", int, 1, 4):
+        case 1:
+            clear()
+            print("1 - Audio File Type\nCurrent type selected:"
+                  f" {config_settings.get('codec')}\n"
+                  "Please select one of the following "
+                  "audio file types:")
+            print(*valid_codecs, sep=', ')
+            config_settings.update({"codec":
+                                    get_sanitized_str_input("> ", valid_codecs,
+                                                            True, True)})
+            # Automatically assign the highest available bitrate for the new codec
+            config_settings.update({"quality":
+                                    ((CODEC_TYPES.get(
+                                        config_settings.get("codec")))[-1])})
+            save_config(config_settings, config_path)
+            print("Codec type set!")
+            pause()
+        case 2:
+            clear()
+            # If the codec is lossless (e.g. "0"), skip quality selection
+            if not CODEC_TYPES.get(config_settings.get('codec'))[0] == "0" :
+                print("2 - Audio Quality\nCurrent Audio type & quality:\n"
+                      f"Type: {config_settings.get('codec')}\n"
+                      f"Quality: {config_settings.get('quality')}\n"
+                      "Please select one of the following preferred "
+                      "qualities available for your chosen audio type:")
+                print(*(CODEC_TYPES.get(config_settings.get('codec'))))
+                config_settings.update({"quality":
+                                        get_sanitized_str_input("> ",
+                                                                CODEC_TYPES.get(
+                                                                    config_settings.get('codec')),
+                                                                True, True)})
+                save_config(config_settings, config_path)
+                print("Audio quality set!")
+                pause()
+            else:
+                print("2 - Audio Quality\nCurrent Audio type & quality:\n"
+                      f"Type: {config_settings.get('codec')} (Lossless)\n"
+                      "Quality: N/A\nYou have selected a lossless audio "
+                      "quality type. You cannot select a quality for this audio"
+                      " type!")
+                pause()
+        case 3:
+            clear()
+            print("3 - Audio file download folder\nThe current folder where "
+                  "audio files will download.\nIf no path is given before folder"
+                  " name (So putting 'downloads' rather than 'C:/Downloads')"
+                  ", it will create and download the audio in the same folder "
+                  "as the python script.\nCurrent Folder: "
+                  f"{config_settings.get('folder')}\nPlease enter the name or path"
+                  " to a folder, or press enter to cancel.")
+            new_path = get_sanitized_str_input("> ", None, None, True)
+            # User hit enter without typing anything
+            if not new_path:
+                print("Audio file download folder unchanged!")
+                pause()
+                return
+            if Path(new_path).is_absolute():
+                config_settings.update({"folder":new_path})
+                save_config(config_settings, config_path)
+                print("Audio file download folder set!")
+                pause()
+            elif Path(script_path.parent / new_path).is_absolute():
+                config_settings.update({"folder":new_path})
+                save_config(config_settings, config_path)
+                print("Audio file download folder set!")
+                pause()
+                
+            else:
+                print("Path formatted incorrectly!")
+                pause()
+        case 4:
+            clear()
+            print("4 - Update Checking\nEnable/Disable the script checking for updates on startup."
+                  f"\nCurrent status: {config_settings.get('update')}\nEnter a new status: (Y/N)")
+            opt = get_sanitized_str_input("> ", ["y", "n"], True, True)
+            config_settings.update({"update": opt == 'y'})
+            save_config(config_settings, config_path)
+            print(f"Update status changed! Now set to: {config_settings.get('update')}")
+            pause()
+
+
+#----------------------------------------------------
+# Config save / loading
+def save_config(config_settings: dict[str, str], config_path: Path) -> None:
+    """Saves the current configuration dictionary to a local JSON file."""
+    try:
+        with open(config_path, 'w') as config_file:
+                json.dump(config_settings, config_file, indent=4)
+    except Exception as error:
+        print("An error occured while trying to save config settings!"
+              f"Error: {error}")
+        pause()
+
+    
+def load_config(config_path: Path) -> dict[str, str] | dict[str, bool]:
+    """
+    Loads configuration from a JSON file. 
+    If the file is missing or corrupted, writes and returns default settings.
+    
+    Returns:
+        dict: The loaded or default configuration settings.
+    """
+    default_settings = {"codec": "mp3", "quality": "320", "folder": "downloads", "update": True}
+    try:
+        # Make a new config file and dump the default settings in
+        if not config_path.exists():
+            with open(config_path, 'w') as config_file:
+                json.dump(default_settings, config_file, indent=4)
+            return default_settings
+        else:
+            # Get our existing config file, and if its correct we return it
+            with open(config_path, 'r') as config_file:
+                loaded_config = json.load(config_file)
+            codec = loaded_config.get('codec')
+            quality = loaded_config.get('quality')
+            # Validate our loaded config against our allowed variables
+            if codec not in valid_codecs or quality not in valid_qualities:
+                raise ValueError("Invalid or missing values in config.")
+            return loaded_config
+    except Exception as error:
+        print("Config file is possibly corrupted! Using default settings and "
+              "resetting file. This can be due to invalid values or invalid "
+              f"formatting of .json file.\nError: {error}")
+        pause()
+        with open(config_path, 'w') as config_file:
+                json.dump(default_settings, config_file, indent=4)
+        return default_settings
+
+
+#----------------------------------------------------
+# Main code loop
+if  __name__ == "__main__":
+    check_py()
+    config_path = script_path.parent / "config.json"
+    config_settings = load_config(config_path)
+    if config_settings["update"]:
+        request_github_ver("MediaFetch", "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest",
+                           MEDIAFETCH_VER, False)
+    match check_ytdlp(config_settings["update"]):
+        case 1 | 2 as status:
+            yt_dlp = get_ytdlp(status)
+        case 0:
+            import yt_dlp
+            pass
+    checknget_ffmpeg()
+    while True:
+        match menu():
+            case 1:
+                downloader(yt_dlp, config_settings)
+            case 2:
+                config(config_settings, config_path)
+            case 3:
+                about()
+            case 4:
+                break
+            case _:
+                print("Something went wrong. Please try again.\n")
+                pause()
