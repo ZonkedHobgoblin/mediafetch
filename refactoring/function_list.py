@@ -113,7 +113,7 @@ def get_sanitized_str_input(prompt: str,
         if allow_anycase:
             string_input = string_input.lower()
         if string_list is not None and string_input not in string_list:
-            print(f"Error: You must enter one of these options: ")
+            print("Error: You must enter one of these options: ")
             print(*string_list, sep = ', ')
             continue
         return string_input
