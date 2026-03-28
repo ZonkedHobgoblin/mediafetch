@@ -115,7 +115,8 @@ This project is actively being developed. Upcoming features include:
 - [x] ~~[v1.0.3] **Type Hinting**: Adding type hinting for improving code reliability and IDE support.~~
 - [x] ~~[v1.0.4] **Update notifictions**: If a new release (MediaFetch or yt_dlp) is out, any older versions will prompt the user to update, or auto install yt_dlp update.~~
 - [ ] [v1.0.6] **Tidying & Refactoring**: General tidying and cleanup of script.
-- [ ] [v1.0.8] **Internationalization**: i18n to move all strings into seperate files, for better DRY and future localisation.
+- [ ] [v1.0.7] **Logging**: Switching to logging over printing for error messages.
+- [ ] [v1.0.8] **Internalization**: i18n to move all strings into seperate files, for better DRY and future localisation.
 - [ ] v[1.1.0] **OOP Refactor**: Transitioning to an object-oriented structure for better modularity.
 - [ ] [v1.2.0] **Video Formats**: Support to download videos in a range of formats, along with subtitles.
 - [ ] [v1.3.0] **Cookie passing**: Optional support to use your browser cookies. For YouTube Premium users, this allows access to higher audio qualities.
