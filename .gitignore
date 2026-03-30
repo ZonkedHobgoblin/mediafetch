@@ -1,6 +1,7 @@
 # Config and downloads folder
 downloads/
 config.json
+mediafetch.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

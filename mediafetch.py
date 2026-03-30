@@ -7,7 +7,7 @@ A command-line Python utility to download YouTube videos and playlists
 as high-quality audio files using the yt_dlp library. Supports configurable 
 codecs and bitrates.
 
-This file is a collection of functions before refactoring.
+This file is in a state before OOP factor
 """
 import subprocess
 import platform
@@ -27,7 +27,7 @@ from pathlib import Path
 # Global settings
 #----------------------------------------------------
 # Codec / Quality Settings
-MEDIAFETCH_VER = "v1.0.5"
+MEDIAFETCH_VER = "v1.0.6"
 REPO_URL = "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest"
 MMA_Q = ["128", "192", "256", "320"]
 OPUS_Q = ["96", "128", "160"]
