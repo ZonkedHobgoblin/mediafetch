@@ -22,13 +22,12 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 
 1. **Clone the repository:**
    
-   Download the release .py file, or you can clone the repo with `git`:
+   Download the release .zip file, or you can clone the repo with `git`:
    ```
    git clone https://github.com/Zonkedhobgoblin/mediafetch
-   cd mediafetch
    ```
 
-   That's it! The script can handle installing yt_dlp and FFmpeg itself. If you'd rather install it yourself, or the script fails, read the next steps below.
+   Unzip it, and that's it! The script can handle installing yt_dlp and FFmpeg itself. If you'd rather install it yourself, or the script fails, read the next steps below.
 <details>
 <summary><b>Step 2 - Instructions for installing yt_dlp</b></summary>
    
@@ -77,6 +76,7 @@ A robust, cross-platform Command Line Interface (CLI) tool for downloading YouTu
 </details>
 
 ## Usage
+   Extract the zip file
    Run the script from your terminal (or just open it to terminal in a file viewer)
    ```bash
    python mediafetch.py
