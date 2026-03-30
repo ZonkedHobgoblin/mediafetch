@@ -14,13 +14,10 @@ msgstr ""
 msgid "Error: Value cannot be above {max_value}."
 msgstr ""
 
-msgid "integer"
+msgid "Error: Invalid input. Please enter a number."
 msgstr ""
 
-msgid "number"
-msgstr ""
-
-msgid "Error: Invalid input. Please enter a {type_name}."
+msgid "Error: Invalid input. Please enter an integer."
 msgstr ""
 
 msgid "Error: You must enter one of these options: "

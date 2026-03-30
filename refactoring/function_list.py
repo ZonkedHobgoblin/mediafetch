@@ -44,13 +44,15 @@ os_name = platform.system()
 #----------------------------------------------------
 
 # gettext setup
-# needs refactor and put into function
+# needs put into function
 locales_dir = script_path.parent / "locales"
+user_lang = 'en'
 try:
-    sys_lang, _ = locale.getlocale() 
-    user_lang = sys_lang.split('_')[0] if sys_lang else 'en'
+    sys_lang, _enc = locale.getlocale() 
+    if sys_lang:
+        user_lang = sys_lang.split('_')[0]
 except Exception:
-    user_lang = 'en'
+    pass
 
 try:
     lang = gettext.translation('mediafetch', localedir=locales_dir, languages=[user_lang, 'en'])
@@ -100,8 +102,10 @@ def get_sanitized_num_input(prompt: str,
                 continue
             return clean_input
         except ValueError:
-            type_name = _("integer") if target_type is int else _("number")
-            print(_("Error: Invalid input. Please enter a {type_name}.").format(type_name=type_name))
+            if target_type is int:
+                print(_("Error: Invalid input. Please enter an integer."))
+            else:
+                print(_("Error: Invalid input. Please enter a number."))
 
 
 def get_sanitized_str_input(prompt: str,
