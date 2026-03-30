@@ -38,31 +38,33 @@ valid_codecs = [*CODEC_TYPES]
 valid_qualities = {item for sublist in CODEC_TYPES.values() for item in sublist}
 script_path = Path(__file__).resolve()
 default_settings = {"codec": "mp3", "quality": "320", "folder": "downloads", "update": True}
+locales_dir = script_path.parent / "locales"
+user_lang = 'en'
 #----------------------------------------------------
 # Other
 os_name = platform.system()
 #----------------------------------------------------
 
-# gettext setup
-# needs put into function
-locales_dir = script_path.parent / "locales"
-user_lang = 'en'
-try:
-    sys_lang, _enc = locale.getlocale() 
-    if sys_lang:
-        user_lang = sys_lang.split('_')[0]
-except Exception:
-    pass
-
-try:
-    lang = gettext.translation('mediafetch', localedir=locales_dir, languages=[user_lang, 'en'])
-    lang.install()
-    _ = lang.gettext
-except FileNotFoundError:
-    _ = gettext.gettext
-
 # Functions (To be refactored and "dried")
 #----------------------------------------------------
+# i18n stuff
+def i18n_setup() -> None:
+    """Get the sys lang and load relevant locale file, otherwise default to English."""
+    global _
+    try:
+        sys_lang, _enc = locale.getlocale() 
+        if sys_lang:
+            user_lang = sys_lang.split('_')[0]
+    except Exception:
+        pass
+
+    try:
+        lang = gettext.translation('mediafetch', localedir=locales_dir, languages=[user_lang, 'en'])
+        lang.install()
+        _ = lang.gettext
+    except FileNotFoundError:
+        _ = gettext.gettext
+#---------------------------------------------------
 # CLI stuff
 def clear() -> None:
     """Clears the terminal screen based on the operating system."""
@@ -609,6 +611,7 @@ def load_config(config_path: Path) -> dict[str, str | bool]:
 #----------------------------------------------------
 # Main code loop
 if  __name__ == "__main__":
+    i18n_setup()
     check_py()
     config_path = script_path.parent / "config.json"
     config_settings = load_config(config_path)
