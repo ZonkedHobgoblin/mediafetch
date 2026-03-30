@@ -1,5 +1,6 @@
 """
-mediafetch v1.0.5 - 25/03/26
+mediafetch v1.0.6 - 30/03/26
+(And 1.0.7 - 1.0.8,)
 By zonkedhobgoblin
 
 A command-line Python utility to download YouTube videos and playlists 
@@ -17,6 +18,8 @@ import urllib.request
 import urllib.error
 import gettext
 import locale
+import logging
+from logging.handlers import RotatingFileHandler
 from types import ModuleType # For module hints
 from importlib.metadata import version, PackageNotFoundError
 from pathlib import Path
@@ -46,6 +49,27 @@ os_name = platform.system()
 #----------------------------------------------------
 
 # Functions (To be refactored and "dried")
+#---------------------------------------------------
+# logging setup
+def logging_setup() -> None:
+    """
+    Set up the logger for usage in logging over prints
+    Logs to mediafetch.log in same dir as .py
+    Is rotating (Clears every 3 logs, or at 1mb on new creation)
+    """
+    global logger
+    handler = RotatingFileHandler(
+        "mediafetch.log", 
+        maxBytes=10**5,
+        backupCount=3
+        )
+    
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[handler]
+    )
+    logger = logging.getLogger(__name__)
 #----------------------------------------------------
 # i18n stuff
 def i18n_setup() -> None:
@@ -55,14 +79,18 @@ def i18n_setup() -> None:
         sys_lang, _enc = locale.getlocale() 
         if sys_lang:
             user_lang = sys_lang.split('_')[0]
+        logger.info(f"System language retrieved. Language: {user_lang}")
     except Exception:
+        logger.warning("Unable to retrieve sys language, defaulting to English")
         pass
 
     try:
         lang = gettext.translation('mediafetch', localedir=locales_dir, languages=[user_lang, 'en'])
         lang.install()
         _ = lang.gettext
+        logger.info(".mo file found and loaded for current language.")
     except FileNotFoundError:
+        logger.warning("Failed to find .mo file! Using default text.")
         _ = gettext.gettext
 #---------------------------------------------------
 # CLI stuff
@@ -159,16 +187,20 @@ def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = Tru
     Latest version of package (parsed)
     Latest version of package (Un-Parsed)
     """
+    logger.info(f"Requesting data from Github API for package: {package}")
     req = urllib.request.Request(repo, headers={"User-Agent": "mediafetch"})
 
     try:
         with urllib.request.urlopen(req, timeout=3) as response:
             data = json.loads(response.read().decode('utf-8'))
+            logger.info(f"Success retreiving data from Github API for package: {package}")
             latest_version_raw = data.get('tag_name')
             latest_version = parse(latest_version_raw)
             current_version = parse(cur_ver)
 
             if latest_version > current_version:
+                logger.debug(f"Newer version detected for {package}, Current version: {current_version},"
+                             f" Latest version: {latest_version}")
                 if not silent:
                     clear()
                     print(_("Update Available:\nA newer version of {package} has been released!\n"
@@ -178,8 +210,10 @@ def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = Tru
                     pause()
                 return [True, latest_version, latest_version_raw]
             else:
+                logger.info(f"No update available for package: {package}")
                 return [False, latest_version, latest_version_raw]
     except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as error:
+        logger.exception(f"Failure to connect to Github API for package: {package}")
         print(_("Failed to connect to GitHub to check for updates. Are you connected to the internet?\n"
                 "Script will not retry updating {package} until next launch.\n"
                 "Error: {error}\nTo stop this message, "
@@ -187,6 +221,7 @@ def request_github_ver(package: str, repo: str, cur_ver: str, silent: bool = Tru
         pause()
 
     except Exception as error:
+        logger.exception("Unexpected occured when conneting to Github API for package: {package}")
         print(_("An unexpected error occured while trying to check for {package} updates!\n"
                 "Error: {error}\nTo stop this message, set 'Update Checking' to false "
                 "in the config menu.").format(package=package, error=error))
@@ -198,23 +233,31 @@ def get_ytdlp(update_arg: int) -> ModuleType:
     try:
         clear()
         if update_arg == 1:
+            logger.info("Trying to update yt_dlp")
             print(_("Attempting to update module yt_dlp..."))
             subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "yt_dlp"], check=True)
+            logger.info("Succesfully updated yt_dlp")
             print(_("\nSuccesfully updated yt_dlp!\n"))
         elif update_arg == 2:
             clear()
+            logger.info("Trying to install yt_dlp")
             print(_("Attempting to install module yt_dlp..."))
             # sys.executable ensures it uses the pip associated with the current Python env
             subprocess.run([sys.executable, "-m", "pip", "install", "yt_dlp"], check=True)
+            logger.info("Succesfully installed yt_dlp")
             print(_("\nSuccesfully installed yt_dlp!\n"))
         else:
-            print(_("Something went wrong."))
+            logger.critical("Fatal error occured. Incorrect argument passed to get_ytdlp. "
+                            "Script should restart.")
+            print(_("Something went wrong. Please restart the script."))
             pause()
             sys.exit(1)
         pause()
+        logger.info("Importing and passing yt_dlp module")
         import yt_dlp
         return yt_dlp
     except Exception as error:
+        logger.exception("Fatal error occured. Unable to install or update yt_dlp.")
         py_cmd = 'py' if os_name == 'Windows' else 'python3'
         upgrade_flag = '--upgrade ' if update_arg == 1 else ''
         print(_("\nAuto-Install failed. Please open your terminal and run this command:\n"
@@ -245,12 +288,14 @@ def check_ytdlp(can_update: bool) -> int:
         return 0
 
     except PackageNotFoundError:
+        logger.exception("yt_dlp not found (Has it been passed correctly?)")
         print(_("Missing dependency! yt_dlp is not installed.\nWould you like "
                 "this script to attempt installation via pip? (Y/N)\n"))
         if get_sanitized_str_input("> ", ['y', 'n'], True,
                                    True) == 'y' :
             return 2
         else:
+            logger.critical("User denied auto-install of yt_dlp. Script will exit.")
             py_cmd = 'py' if os_name == 'Windows' else 'python3'
             print(_("\nyt_dlp is required to run MediaFetch!\n"
                     "Please open your terminal and run this command:\n"
@@ -259,6 +304,7 @@ def check_ytdlp(can_update: bool) -> int:
             sys.exit(1)
     
     except Exception as error:
+        logger.exception("Fatal error occured when checking for yt_dlp's version.")
         print(_("An error occured when checking for yt_dlp's version!\n"
                 "Error: {error}").format(error=error))
         pause()
@@ -266,15 +312,17 @@ def check_ytdlp(can_update: bool) -> int:
 
 
 #---------------------------------------
-# FFmpeg stuff
+# FFmpeg stuff - REFACTOR NEEDED BIGTIME!!!
 def checknget_ffmpeg() -> bool:
     """
     Checks system path for FFmpeg dependency. 
     If missing, prompts the user with OS-specific automated installation options.
     """
     if shutil.which('ffmpeg') is not None:
+        logger.info("FFmpeg found")
         return True
     
+    logger.warning("FFmpeg not found")
     clear()
     print(_("Missing dependency! FFmpeg is missing\nyt_dlp requires FFmpeg to "
             "extract and convert audio files."))
@@ -287,6 +335,7 @@ def checknget_ffmpeg() -> bool:
     match os_name:
         case "Windows":
             if auto_install == "y":
+                logger.info("Attempting auto install FFmpeg via winget")
                 try:
                     print(_("Attempting auto install via winget..."))
                     subprocess.run(['winget', 'install', 'ffmpeg',
@@ -295,11 +344,14 @@ def checknget_ffmpeg() -> bool:
                                    check=True)
                     print(_("\nFFmpeg succesfully installed! Script will "
                             "restart..."))
+                    logger.info("Succesfully installed FFmpeg via winget")
                     pause()
+                    logger.info("Restarting script (Attempting to open new terminal)")
                     subprocess.Popen(['start', 'cmd', '/K', sys.executable,
                                       script_path])
                     sys.exit(0)
                 except Exception as error:
+                    logger.exception("Auto-Install error. Displaying instructions and exiting.")
                     print(_("\nAuto-Install error, please review manual "
                             "instructions! (Is winget missing?)\nError: {error}").format(error=error))
                     pause()
@@ -314,21 +366,26 @@ def checknget_ffmpeg() -> bool:
             has_brew = shutil.which("brew") is not None
             if auto_install == "y":
                 if has_brew:
+                    logger.info("Attempting auto install via Homebrew")
                     try:
                         print(_("Attempting auto install via Homebrew..."))
                         subprocess.run(['brew', 'install', 'ffmpeg'], check=True)
+                        logger.info("Succesfully installed FFmpeg via Homebrew")
                         print(_("\nFFmpeg succesfully installed! Script will "
                                 "restart..."))
                         pause()
+                        logger.info("Restarting script (Attempting to open new terminal)")
                         applescript = ('tell application "Terminal" to do script '
                         f'"{sys.executable} {script_path}"')
                         subprocess.Popen(['osascript', '-e', applescript])
                         sys.exit(0)
                     except Exception as error:
+                        logger.exception("Auto-Install error. Displaying instructions and exiting.")
                         print(_("\nAuto-Install error, please review manual "
                                 "instructions!\nError:{error}").format(error=error))
                         pause()
                 else:
+                    logger.warning("Homebrew not found. Displaying instructions and exiting.")
                     print(_("Homebrew was not found, Please review manual "
                             "instructions!"))
                     pause()
@@ -342,25 +399,31 @@ def checknget_ffmpeg() -> bool:
 
         case "Linux":
             if auto_install == "y":
+                logger.info("Attempting auto install via sudo apt")
                 print(_("Attempting auto install via sudo apt...\n"
                         "NOTE: You may be prompted to enter your sudo password "
                         "below."))
                 try:
                     subprocess.run(['sudo', 'apt', 'install', '-y', 'ffmpeg'],
                                    check=True)
-                    if shutil.which("gnome-shell") is not None:
+                    logger.info("Succesfully installed FFmpeg via sudo apt")
+                    if shutil.which("gnome-shell") is not None:#
+                        logger.info("Gnome detected. Attempting to open new terminal.")
                         print(_("\nFFmpeg succesfully installed! Script will "
                                 "restart..."))
                         pause()
                         subprocess.Popen(['gnome-terminal', '--',
                                           sys.executable, script_path])
-                        sys.exit(1)
+                        logger.info("New window opened. Exiting script.")
+                        sys.exit(0)
                     else:
+                        logger.info("FFmpeg succesfully installed. Exiting script.")
                         print(_("\nFFmpeg succesfully installed! Please open the"
                                 " script again..."))
                         pause()
-                        sys.exit(1)
+                        sys.exit(0)
                 except Exception as error:
+                    logger.exception("Auto-Install error. Displaying instructions and exiting.")
                     print(_("\nAuto-Install error, please review manual "
                             "instructions!\nError: {error}").format(error=error))
                     pause()
@@ -371,6 +434,7 @@ def checknget_ffmpeg() -> bool:
             pause()
             sys.exit(1)
         case _:
+            logger.critical("Operating System is possibly unsuported. Exiting script.")
             clear()
             print(_("\nPossibly unsupported operating system!\nPlease search "
                     "online for: 'How to install FFmpeg on (Your OS)'"))
@@ -382,13 +446,31 @@ def checknget_ffmpeg() -> bool:
 # Python Version Checking
 def check_py() -> None:
     """Ensures the script is running on a compatible version of Python."""
+    logger.info("Checking Python version")
     if sys.version_info < (3, 10):
+        logger.critical(f"Python version ({sys.version}) is below 3.10. Script will exit.")
         print(_("This script requires Python 3.10 or higher!"))
         pause()
-        sys.exit(0)
+        sys.exit(1)
+    logger.info(f"Python version ({sys.version}) is compatible")
 
 
 #----------------------------------------------------
+#Progress hook
+def progress_hook(d: dict) -> None:
+    """Called by yt_dlp during the download process."""
+    if d['status'] == 'finished':
+        file_name = d.get('filename')
+        logger.info("Successfully finished downloading: %s", file_name)
+    
+    elif d['status'] == 'downloading':
+        p = d.get('_percent_str', '0%')
+        s = d.get('_speed_str', 'N/A')
+        logger.debug("Downloading %s at %s", p, s)
+
+    elif d['status'] == 'error':
+        logger.error("Error occurred while downloading: %s", d.get('filename'))
+#---------------------------------------------------
 # Downloading
 def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folder: str) -> None:
     """
@@ -403,7 +485,8 @@ def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folde
     ydl_opts = {
         # Audio Settings
         'format': 'bestaudio/best',
-        'outtmpl': f'{folder}/%(title)s.%(ext)s', # Save in a downloads folder
+        'progress_hooks': [progress_hook],
+        'outtmpl': f'{folder}/%(title)s.%(ext)s', # Save in the configed downloads folder
         'postprocessors': [{
             'key': "FFmpegExtractAudio",
             'preferredcodec': codec,
@@ -422,10 +505,13 @@ def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folde
         'no_warnings': True,
     }
 
+    logger.info("Attempting to download media")
     try:
         # Create the downloads folder if it doesn't exist in the current dir
         Path(folder).mkdir(parents=True, exist_ok=True)
-
+        logger.info(f"Downloads folder created: {folder}")
+        
+        logger.debug(f"Downloading URL: {url}")
         print(_("Downloading: {url}").format(url=url))
         
         # Pass the ydl_opts dict to the downloader
@@ -433,11 +519,14 @@ def download_video(yt_dlp: ModuleType, url: str, codec: str, quality: str, folde
             ydl.extract_info(url, download=True)
             
         print(_("Downloading finished! \n"))
+        logger.info("Download finished")
         
     except yt_dlp.utils.DownloadError as error:
+        logger.exception("Download error occured")
         print(_("yt_dlp encountered a download error! Error: {error}\n").format(error=error))
         
     except Exception as error:
+        logger.exception("Unexpected error occured")
         print(_("Failed to download. Error: {error}\n").format(error=error))
 
 
@@ -558,6 +647,10 @@ def config(config_settings: dict[str, str | bool], config_path: Path) -> None:
             save_config(config_settings, config_path)
             print(_("Update status changed! Now set to: {update}").format(update=config_settings.get('update')))
             pause()
+        case _:
+            logger.warning("Unexpected option passed into config menu.")
+            print("Unexpected option given! Heading to menu.")
+            pause()
 
 
 #----------------------------------------------------
@@ -565,9 +658,12 @@ def config(config_settings: dict[str, str | bool], config_path: Path) -> None:
 def save_config(config_settings: dict[str, str | bool], config_path: Path) -> None:
     """Saves the current configuration dictionary to a local JSON file."""
     try:
+        logger.info("Saving config settings")
         with open(config_path, 'w') as config_file:
                 json.dump(config_settings, config_file, indent=4)
+        logger.info("Config settings saved")
     except Exception as error:
+        logger.exception("Error occured while trying to save config settings")
         print(_("An error occured while trying to save config settings!"
                 "Error: {error}").format(error=error))
         pause()
@@ -585,10 +681,13 @@ def load_config(config_path: Path) -> dict[str, str | bool]:
     try:
         # Make a new config file and dump the default settings in
         if not config_path.exists():
+            logger.warning("No config file found! Writing default settings.")
             with open(config_path, 'w') as config_file:
                 json.dump(default_settings, config_file, indent=4)
+            logger.info("Default settings written")
             return default_settings
         else:
+            logger.info("Config file found, loading settings.")
             # Get our existing config file, and if its correct we return it
             with open(config_path, 'r') as config_file:
                 loaded_config = json.load(config_file)
@@ -597,20 +696,26 @@ def load_config(config_path: Path) -> dict[str, str | bool]:
             # Validate our loaded config against our allowed variables
             if codec not in valid_codecs or quality not in valid_qualities:
                 raise ValueError("Invalid or missing values in config.")
+            logger.info("Config settings loaded")
             return loaded_config
     except Exception as error:
+        logger.exception("Error occured while trying to load config settings! "
+        "Reverting to defaults.")
         print(_("Config file is possibly corrupted! Using default settings and "
                 "resetting file. This can be due to invalid values or invalid "
                 "formatting of .json file.\nError: {error}").format(error=error))
         pause()
         with open(config_path, 'w') as config_file:
                 json.dump(default_settings, config_file, indent=4)
+        logger.info("Default settings written")
         return default_settings
 
 
 #----------------------------------------------------
 # Main code loop
 if  __name__ == "__main__":
+    logging_setup()
+    logger.info("Starting script")
     i18n_setup()
     check_py()
     config_path = script_path.parent / "config.json"
@@ -625,6 +730,7 @@ if  __name__ == "__main__":
             import yt_dlp
             pass
     checknget_ffmpeg()
+    logger.info("Succesfully set up! Starting main loop")
     while True:
         match menu():
             case 1:
@@ -634,6 +740,7 @@ if  __name__ == "__main__":
             case 3:
                 about()
             case 4:
+                logger.info("User exiting script")
                 break
             case _:
                 print(_("Something went wrong. Please try again.\n"))
