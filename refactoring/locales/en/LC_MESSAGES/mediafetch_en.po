@@ -1,0 +1,180 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: mediafetch v1.0.5\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "\nPress enter to continue..."
+msgstr ""
+
+msgid "Error: Value cannot be below {min_value}."
+msgstr ""
+
+msgid "Error: Value cannot be above {max_value}."
+msgstr ""
+
+msgid "integer"
+msgstr ""
+
+msgid "number"
+msgstr ""
+
+msgid "Error: Invalid input. Please enter a {type_name}."
+msgstr ""
+
+msgid "Error: You must enter one of these options: "
+msgstr ""
+
+msgid "Update Available:\nA newer version of {package} has been released!\nCurrent Version: {cur_ver}\nLatest Version: {latest_version_raw}\nIt is recommended you install the latest version, for reasons such as bug fixes."
+msgstr ""
+
+msgid "Failed to connect to GitHub to check for updates. Are you connected to the internet?\nScript will not retry updating {package} until next launch.\nError: {error}\nTo stop this message, set 'Update Checking' to false in the config menu."
+msgstr ""
+
+msgid "An unexpected error occured while trying to check for {package} updates!\nError: {error}\nTo stop this message, set 'Update Checking' to false in the config menu."
+msgstr ""
+
+msgid "Attempting to update module yt_dlp..."
+msgstr ""
+
+msgid "\nSuccesfully updated yt_dlp!\n"
+msgstr ""
+
+msgid "Attempting to install module yt_dlp..."
+msgstr ""
+
+msgid "\nSuccesfully installed yt_dlp!\n"
+msgstr ""
+
+msgid "Something went wrong."
+msgstr ""
+
+msgid "\nAuto-Install failed. Please open your terminal and run this command:\n{py_cmd} -m pip install {upgrade_flag}yt_dlp\nError: {error}"
+msgstr ""
+
+msgid "yt_dlp is outdated!\nCurrent: {ytdlp_ver}\nLatest: {latest_version}\nWould you like this script to attempt installation of the latest version via pip? (Y/N)"
+msgstr ""
+
+msgid "Missing dependency! yt_dlp is not installed.\nWould you like this script to attempt installation via pip? (Y/N)\n"
+msgstr ""
+
+msgid "\nyt_dlp is required to run MediaFetch!\nPlease open your terminal and run this command:\n{py_cmd} -m pip install yt_dlp"
+msgstr ""
+
+msgid "An error occured when checking for yt_dlp's version!\nError: {error}"
+msgstr ""
+
+msgid "Missing dependency! FFmpeg is missing\nyt_dlp requires FFmpeg to extract and convert audio files."
+msgstr ""
+
+msgid "Would you like this script to attempt installation, or view installation instructions yourself? (Y/N)\n> "
+msgstr ""
+
+msgid "Attempting auto install via winget..."
+msgstr ""
+
+msgid "\nFFmpeg succesfully installed! Script will restart..."
+msgstr ""
+
+msgid "\nAuto-Install error, please review manual instructions! (Is winget missing?)\nError: {error}"
+msgstr ""
+
+msgid "Manual FFmpeg installation:\nOption 1: Open CMD and run: winget install ffmpeg\nOption 2: Download from: https://github.com/BtbN/FFmpeg-Builds/releases"
+msgstr ""
+
+msgid "Attempting auto install via Homebrew..."
+msgstr ""
+
+msgid "\nAuto-Install error, please review manual instructions!\nError:{error}"
+msgstr ""
+
+msgid "Homebrew was not found, Please review manual instructions!"
+msgstr ""
+
+msgid "Manual FFmpeg installation:\nStep 1. Install Homebrew if missing: https://brew.sh/\nStep 2. Open Terminal and run: brew install ffmpeg"
+msgstr ""
+
+msgid "Attempting auto install via sudo apt...\nNOTE: You may be prompted to enter your sudo password below."
+msgstr ""
+
+msgid "\nFFmpeg succesfully installed! Please open the script again..."
+msgstr ""
+
+msgid "\nAuto-Install error, please review manual instructions!\nError: {error}"
+msgstr ""
+
+msgid "Manual FFmpeg installation:\nDebian/Ubuntu: sudo apt install ffmpeg\nArch Linux:  sudo pacman -S ffmpeg\nFedora:      sudo dnf install ffmpeg"
+msgstr ""
+
+msgid "\nPossibly unsupported operating system!\nPlease search online for: 'How to install FFmpeg on (Your OS)'"
+msgstr ""
+
+msgid "This script requires Python 3.10 or higher!"
+msgstr ""
+
+msgid "Downloading: {url}"
+msgstr ""
+
+msgid "Downloading finished! \n"
+msgstr ""
+
+msgid "yt_dlp encountered a download error! Error: {error}\n"
+msgstr ""
+
+msgid "Failed to download. Error: {error}\n"
+msgstr ""
+
+msgid "About:\n\nMediaFetch {mediafetch_ver} by zonkedhobgoblin\nhttps://github.com/ZonkedHobgoblin/mediafetch\n\nUsing yt_dlp, convert videos or playlists into audio files.\nCan be configured to change the output type.\nChosen codecs and qualities are preferred, not guaranteed to be downloaded as.\nUsually, this only applies to qualities.\nEnsure FFmpeg is set up before using.\n\n"
+msgstr ""
+
+msgid "Enter YouTube URL (Video or Playlist): "
+msgstr ""
+
+msgid "MediaFetch - Download Youtube videos as audio files\n\n1 - Download\n2 - Config\n3 - About\n4 - Quit\n"
+msgstr ""
+
+msgid "MediaFetch config\n1 - Audio File Type\n2 - Audio Quality\n3 - Download Folder\n4 - Update Checking"
+msgstr ""
+
+msgid "1 - Audio File Type\nCurrent type selected: {codec}\nPlease select one of the following audio file types:"
+msgstr ""
+
+msgid "Codec type set!"
+msgstr ""
+
+msgid "2 - Audio Quality\nCurrent Audio type & quality:\nType: {codec}\nQuality: {quality}\nPlease select one of the following preferred qualities available for your chosen audio type:"
+msgstr ""
+
+msgid "Audio quality set!"
+msgstr ""
+
+msgid "2 - Audio Quality\nCurrent Audio type & quality:\nType: {codec} (Lossless)\nQuality: N/A\nYou have selected a lossless audio quality type. You cannot select a quality for this audio type!"
+msgstr ""
+
+msgid "3 - Audio file download folder\nThe current folder where audio files will download.\nIf no path is given before folder name (So putting 'downloads' rather than 'C:/Downloads'), it will create and download the audio in the same folder as the python script.\nCurrent Folder: {folder}\nPlease enter the name or path to a folder, or press enter to cancel."
+msgstr ""
+
+msgid "Audio file download folder unchanged!"
+msgstr ""
+
+msgid "Audio file download folder set!"
+msgstr ""
+
+msgid "Path formatted incorrectly!"
+msgstr ""
+
+msgid "4 - Update Checking\nEnable/Disable the script checking for updates on startup.\nCurrent status: {update}\nEnter a new status: (Y/N)"
+msgstr ""
+
+msgid "Update status changed! Now set to: {update}"
+msgstr ""
+
+msgid "An error occured while trying to save config settings!Error: {error}"
+msgstr ""
+
+msgid "Config file is possibly corrupted! Using default settings and resetting file. This can be due to invalid values or invalid formatting of .json file.\nError: {error}"
+msgstr ""
+
+msgid "Something went wrong. Please try again.\n"
+msgstr ""
