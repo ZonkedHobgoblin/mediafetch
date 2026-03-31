@@ -8,6 +8,15 @@ from core.constants import OS_NAME, MEDIAFETCH_VER
 class CLIInterface:
     
     
+    def __init__(self, config_ref, constants_ref, downloader_ref, updater_ref):
+        self.config = config_ref
+        self.constants = constants_ref
+        self.downloader = downloader_ref
+        self.updater = updater_ref
+        pass
+        
+    
+    
     def menu() -> None:
         """Displays the main menu and captures the user's choice."""
         print(_("MediaFetch - Download Youtube videos as audio files\n"
