@@ -1,6 +1,4 @@
-import platform
 import subprocess
-from types import ModuleType
 from utils.core_utils import _
 from core.constants import OS_NAME, MEDIAFETCH_VER
 
@@ -8,22 +6,36 @@ from core.constants import OS_NAME, MEDIAFETCH_VER
 class CLIInterface:
     
     
-    def __init__(self, config_ref, constants_ref, downloader_ref, updater_ref):
+    def __init__(self, config_ref, dependency_ref, downloader_ref, updater_ref):
         self.config = config_ref
-        self.constants = constants_ref
+        self.dependency = dependency_ref
         self.downloader = downloader_ref
         self.updater = updater_ref
-        pass
+        #self.current_config = self.config.current_config
         
+        
+    def run(self):
+        while True:
+            CLIUtils.clear()
+            CLIInterface.menu()
+            match CLIUtils.get_sanitized_num_input("> ", int, 1, 4):
+                case 1:
+                    self.handle_downloader()
+                case 2:
+                    pass#self.config()
+                case 3:
+                    self.show_about()
+                case 4:
+                    break
     
     
-    def menu() -> None:
+    def menu(self) -> None:
         """Displays the main menu and captures the user's choice."""
         print(_("MediaFetch - Download Youtube videos as audio files\n"
                 "\n1 - Download\n2 - Config\n3 - About\n4 - Quit\n"))
         
         
-    def about() -> None:
+    def show_about(self) -> None:
         """Displays information about the script."""
         print(_("About:\n\nMediaFetch {mediafetch_ver} by zonkedhobgoblin\n"
         "https://github.com/ZonkedHobgoblin/mediafetch\n\n"
@@ -34,7 +46,7 @@ class CLIInterface:
         "Ensure FFmpeg is set up before using.\n\n").format(mediafetch_ver=MEDIAFETCH_VER))
         CLIUtils.pause()
         
-    def downloader(yt_dlp: ModuleType, config_settings: dict[str, str | bool]) -> None:
+    def handle_downloader(self) -> None:
         """Handles the download flow from the main menu."""
         CLIUtils.clear()
         link = input(_("Enter YouTube URL (Video or Playlist): "))
