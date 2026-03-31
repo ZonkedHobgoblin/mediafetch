@@ -1,13 +1,12 @@
 import gettext
 import locale
 import logging
+import core.constants as constants
 from logging.handlers import RotatingFileHandler
-from pathlib import Path
 
 _ = gettext.gettext
 
-parent_path = Path(__file__).resolve().parent
-locales_dir = parent_path / "locales"
+locales_dir = constants.SCRIPT_PATH / "locales"
 
 class LoggerSetup:
     @staticmethod
@@ -15,7 +14,7 @@ class LoggerSetup:
         """
         Set up the logger for usage in logging over prints
         Logs to mediafetch.log in same dir as .py
-        Is rotating (Clears every 3 logs, or at 1mb on new creation)
+        Is rotating (At 100kb size on new creation)
         """
         global logger
         handler = RotatingFileHandler(

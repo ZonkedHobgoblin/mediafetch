@@ -1,4 +1,5 @@
 import platform
+from pathlib import Path
 
 MEDIAFETCH_VER = "v1.1.0"
 REPO_URL = "https://api.github.com/repos/ZonkedHobgoblin/mediafetch/releases/latest"
@@ -16,3 +17,4 @@ CODEC_TYPES = {
 
 VALID_CODECS = list(CODEC_TYPES.keys())
 OS_NAME = platform.system()
+SCRIPT_PATH = Path(__file__).resolve().parent.parent
