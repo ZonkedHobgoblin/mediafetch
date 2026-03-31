@@ -173,7 +173,13 @@ msgstr ""
 msgid "Config file is possibly corrupted! Using default settings."
 msgstr ""
 
-msgid ""
+msgid "Config file not found! Using default settings."
+msgstr ""
+
+msgid "Config file contains incorrect values! Using default settings."
+msgstr ""
+
+msgid "An unknown error occured! Using default settings."
 msgstr ""
 
 msgid "Something went wrong. Please try again.\n"

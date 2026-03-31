@@ -1,6 +1,6 @@
 import logging
 import json
-from core.constants import VALID_CODECS, VALID_QUALITIES
+from core.constants import VALID_CODECS, VALID_QUALITIES, SCRIPT_PATH
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -8,8 +8,8 @@ default_settings = {"codec": "mp3", "quality": "320", "folder": "downloads", "up
 class ConfigManager:
     
     
-    def __init__(self, config_path: Path):
-        self.path = config_path
+    def __init__(self):
+        self.path = SCRIPT_PATH / "config.json"
         self.settings = default_settings
         logger.info("ConfigManager initialized")
 
@@ -17,9 +17,10 @@ class ConfigManager:
     def load(self):
         """Load our config and store it"""
         try:
-            if not self.config_path.exists():
+            if not self.path.exists():
                 logger.warning("No config file found! Writing default settings.")
                 self.save()
+                return "SUCCESS"
             else:
                 logger.info("Loading config file")
                 with open(self.path, 'r') as config_file:
@@ -29,7 +30,7 @@ class ConfigManager:
                 quality = loaded_file.get("quality")
                 
                 if codec not in VALID_CODECS or quality not in VALID_QUALITIES:
-                    raise(ValueError)
+                    raise ValueError(f"Invalid codec or quality: {codec}, {quality}")
                 self.settings = loaded_file
                 return "SUCCESS"
             

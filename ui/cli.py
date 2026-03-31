@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from utils.core_utils import _
 from core.constants import OS_NAME, MEDIAFETCH_VER
 
@@ -11,19 +12,23 @@ class CLIInterface:
         self.dependency = dependency_ref
         self.downloader = downloader_ref
         self.updater = updater_ref
-        #self.current_config = self.config.current_config
         
         
     def run(self):
+        self.config.load()
+        self.current_config = self.config.settings
         while True:
             CLIUtils.clear()
             self.menu()
             match CLIUtils.get_sanitized_num_input("> ", int, 1, 4):
                 case 1:
+                    CLIUtils.clear()
                     self.handle_downloader()
                 case 2:
+                    CLIUtils.clear()
                     pass#self.config()
                 case 3:
+                    CLIUtils.clear()
                     self.show_about()
                 case 4:
                     break
@@ -50,10 +55,25 @@ class CLIInterface:
         """Handles the download flow from the main menu."""
         CLIUtils.clear()
         link = input(_("Enter YouTube URL (Video or Playlist): "))
-        self.downloader(link, self.current_config["codec"], self.current_config["quality"],
-                        self.current_config["folder"])
+        print(_("Downloading: {url}").format(url=link))
+        status = self.downloader.download_audio(link, self.current_config["codec"], 
+                                                self.current_config["quality"], 
+                                                self.current_config["folder"])                      
+        match status:
+            case "SUCCESS":
+                pass
+            
+            case "ERR_DOWNLOAD":
+                print("Error downloading video!")
+            
+            case "ERR_UNKOWN" | _:
+                print("Something went wrong!")
+        CLIUtils.pause()
+            
+        print(_("Downloading finished! \n"))
+        CLIUtils.pause()
         
-    def handle_config_io(self) -> dict[str, str | bool]:
+    def handle_config_io(self) -> None:
         """Handles the loading and saving of the config manager."""
         status = self.config.load()
         match status:
@@ -65,23 +85,29 @@ class CLIInterface:
                 pass
                 
             case "ERR_NOTFOUND":
-                print("")
+                print(_("Config file not found! Using default settings."))
                 pass
             
             case "ERR_PARSE":
+                print(_("Config file contains incorrect values! Using default settings."))
                 pass
                 
             case "ERR_UNKOWN":
+                print(_("An unknown error occured! Using default settings."))
                 pass
             
             case _:
+                print(_("Something went wrong when attempting to load config file. Exiting."))
+                sys.exit(1)
                 
         status = self.config.save()
-        if status == "ERR_CORRUPT":
-            print(_("Config file was corrupted and has been reset."))
-        save_status = self.config.save()
-        if save_status == "ERR_SAVE":
-            print(_("Failed to save settings!"))
+        match status:
+            case "SUCCESS":
+                pass
+            case "ERR_SAVE":
+                print(_("Something went wrong when attempting to save config file. Exiting."))
+                sys.exit(1)
+                
 
 
 class CLIUtils:

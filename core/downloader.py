@@ -67,21 +67,20 @@ class MediaDownloader:
             logger.info(f"Downloads folder created: {folder}")
             
             logger.debug(f"Downloading URL: {url}")
-            print(_("Downloading: {url}").format(url=url))
             
             # Pass the ydl_opts dict to the downloader
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.extract_info(url, download=True)
                 
-            print(_("Downloading finished! \n"))
             logger.info("Download finished")
+            return "SUCCESS"
             
         except yt_dlp.utils.DownloadError as error:
-            logger.exception("Download error occured")
-            return "DL-ER-001"
+            logger.exception("DL-ER-001")
+            return "ERR_DOWNLOAD"
             print(_("yt_dlp encountered a download error! Error: {error}\n").format(error=error))
             
         except Exception as error:
-            logger.exception("Unexpected error occured")
-            return "DL-ER-002"
+            logger.exception("DL-ER-002")
+            return "ERR_UNKOWN"
             print(_("Failed to download. Error: {error}\n").format(error=error))
