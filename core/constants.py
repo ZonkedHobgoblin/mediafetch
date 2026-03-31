@@ -16,5 +16,10 @@ CODEC_TYPES = {
 }
 
 VALID_CODECS = list(CODEC_TYPES.keys())
+VALID_QUALITIES = {item for sublist in CODEC_TYPES.values() for item in sublist}
 OS_NAME = platform.system()
 SCRIPT_PATH = Path(__file__).resolve().parent.parent
+
+class ErrorCodes:
+    DOWNLOAD_ERROR = "DL-ER-001"
+    DOWNLOAD_OTHER = "DL-ER-002"

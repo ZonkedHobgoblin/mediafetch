@@ -15,9 +15,9 @@ class MediaFetchApp:
         self.logger.info("MediaFetch App Started")
         
         config_manager = ConfigManager()
-        media_downloader = MediaDownloader()
-        updater = Updater()
         dependency_manager = DependencyManager()
+        updater = Updater()
+        media_downloader = MediaDownloader()
         
         self.ui = CLIInterface(config_manager, dependency_manager, media_downloader, updater)
     

@@ -17,7 +17,7 @@ class CLIInterface:
     def run(self):
         while True:
             CLIUtils.clear()
-            CLIInterface.menu()
+            self.menu()
             match CLIUtils.get_sanitized_num_input("> ", int, 1, 4):
                 case 1:
                     self.handle_downloader()
@@ -50,6 +50,38 @@ class CLIInterface:
         """Handles the download flow from the main menu."""
         CLIUtils.clear()
         link = input(_("Enter YouTube URL (Video or Playlist): "))
+        self.downloader(link, self.current_config["codec"], self.current_config["quality"],
+                        self.current_config["folder"])
+        
+    def handle_config_io(self) -> dict[str, str | bool]:
+        """Handles the loading and saving of the config manager."""
+        status = self.config.load()
+        match status:
+            case "SUCCESS":
+                pass
+                
+            case "ERR_CORRUPT":
+                print(_("Config file is possibly corrupted! Using default settings."))
+                pass
+                
+            case "ERR_NOTFOUND":
+                print("")
+                pass
+            
+            case "ERR_PARSE":
+                pass
+                
+            case "ERR_UNKOWN":
+                pass
+            
+            case _:
+                
+        status = self.config.save()
+        if status == "ERR_CORRUPT":
+            print(_("Config file was corrupted and has been reset."))
+        save_status = self.config.save()
+        if save_status == "ERR_SAVE":
+            print(_("Failed to save settings!"))
 
 
 class CLIUtils:

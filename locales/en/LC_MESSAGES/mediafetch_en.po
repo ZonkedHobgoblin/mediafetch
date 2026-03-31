@@ -170,7 +170,10 @@ msgstr ""
 msgid "An error occured while trying to save config settings!Error: {error}"
 msgstr ""
 
-msgid "Config file is possibly corrupted! Using default settings and resetting file. This can be due to invalid values or invalid formatting of .json file.\nError: {error}"
+msgid "Config file is possibly corrupted! Using default settings."
+msgstr ""
+
+msgid ""
 msgstr ""
 
 msgid "Something went wrong. Please try again.\n"
