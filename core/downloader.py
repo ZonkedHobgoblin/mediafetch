@@ -63,8 +63,8 @@ class MediaDownloader:
         logger.info("Attempting to download media")
         try:
             # Create the downloads folder if it doesn't exist in the current dir
-            Path(folder).mkdir(parents=True, exist_ok=True)
-            logger.info(f"Downloads folder created: {folder}")
+            #if Path(folder).mkdir(parents=True, exist_ok=True):
+                #logger.info(f"Downloads folder created: {folder}")
             
             logger.debug(f"Downloading URL: {url}")
             
@@ -75,12 +75,10 @@ class MediaDownloader:
             logger.info("Download finished")
             return "SUCCESS"
             
-        except yt_dlp.utils.DownloadError as error:
+        except yt_dlp.utils.DownloadError:
             logger.exception("DL-ER-001")
             return "ERR_DOWNLOAD"
-            print(_("yt_dlp encountered a download error! Error: {error}\n").format(error=error))
             
-        except Exception as error:
+        except Exception:
             logger.exception("DL-ER-002")
             return "ERR_UNKOWN"
-            print(_("Failed to download. Error: {error}\n").format(error=error))

@@ -16,7 +16,6 @@ class LoggerSetup:
         Logs to mediafetch.log in same dir as .py
         Is rotating (At 100kb size on new creation)
         """
-        global logger
         handler = RotatingFileHandler(
             "mediafetch.log", 
             maxBytes=10**5,
@@ -29,13 +28,13 @@ class LoggerSetup:
             handlers=[handler]
         )
         logger = logging.getLogger(__name__)
+        logger.info("Logger initialized")
 
 class I18nSetup:
     
     @staticmethod
     def initialize() -> None:
         """Get the sys lang and load relevant locale file, otherwise default to English."""
-        global _
         logger = logging.getLogger(__name__)
         try:
             sys_lang, _enc = locale.getlocale() 
