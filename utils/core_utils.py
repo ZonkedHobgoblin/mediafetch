@@ -4,8 +4,6 @@ import logging
 import core.constants as constants
 from logging.handlers import RotatingFileHandler
 
-_ = gettext.gettext
-
 locales_dir = constants.SCRIPT_PATH / "locales"
 
 class LoggerSetup:
@@ -31,7 +29,6 @@ class LoggerSetup:
         logger.info("Logger initialized")
 
 class I18nSetup:
-    
     @staticmethod
     def initialize() -> None:
         """Get the sys lang and load relevant locale file, otherwise default to English."""
@@ -48,8 +45,6 @@ class I18nSetup:
         try:
             lang = gettext.translation('mediafetch', localedir=locales_dir, languages=[user_lang, 'en'])
             lang.install()
-            _ = lang.gettext
             logger.info(".mo file found and loaded for current language.")
         except FileNotFoundError:
             logger.warning("Failed to find .mo file! Using default text.")
-            _ = gettext.gettext

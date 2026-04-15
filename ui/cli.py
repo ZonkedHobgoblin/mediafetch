@@ -1,8 +1,11 @@
 import subprocess
 import sys
-from utils.core_utils import _
 from core.constants import OS_NAME, MEDIAFETCH_VER
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    def _(message: str) -> str: ...
+    """Stops IDE errors"""
 
 class CLIInterface:
     
@@ -61,17 +64,16 @@ class CLIInterface:
                                                 self.current_config["folder"])                      
         match status:
             case "SUCCESS":
-                pass
+                print(_("Download finished!"))
+                CLIUtils.pause()
             
             case "ERR_DOWNLOAD":
-                print("Error downloading video!")
+                print(_("Error downloading video!"))
+                CLIUtils.pause()
             
             case "ERR_UNKOWN" | _:
-                print("Something went wrong!")
-        CLIUtils.pause()
-            
-        print(_("Downloading finished! \n"))
-        CLIUtils.pause()
+                print(_("Something went wrong!"))
+                CLIUtils.pause()
         
     def handle_config_io(self) -> None:
         """Handles the loading and saving of the config manager."""

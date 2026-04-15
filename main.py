@@ -12,7 +12,7 @@ class MediaFetchApp:
         LoggerSetup.initialize()
         I18nSetup.initialize()
         self.logger = logging.getLogger(__name__)
-        self.logger.info("MediaFetch App Started")
+        self.logger.info("Starting MediaFetch")
         
         config_manager = ConfigManager()
         dependency_manager = DependencyManager()
@@ -20,6 +20,7 @@ class MediaFetchApp:
         media_downloader = MediaDownloader()
         
         self.ui = CLIInterface(config_manager, dependency_manager, media_downloader, updater)
+        self.logger.info("MediaFetch initialized")
     
     
     def start(self):
