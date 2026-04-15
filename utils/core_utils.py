@@ -1,10 +1,10 @@
 import gettext
 import locale
 import logging
-import core.constants as constants
+from core.constants import Env
 from logging.handlers import RotatingFileHandler
 
-locales_dir = constants.SCRIPT_PATH / "locales"
+locales_dir = Env.SCRIPT_PATH / "locales"
 
 class LoggerSetup:
     @staticmethod

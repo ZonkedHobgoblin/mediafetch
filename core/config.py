@@ -1,7 +1,6 @@
 import logging
 import json
-from core.constants import VALID_CODECS, VALID_QUALITIES, SCRIPT_PATH
-from pathlib import Path
+from core.constants import MediaData, Env, ErrorCodes
 
 logger = logging.getLogger(__name__)
 default_settings = {"codec": "mp3", "quality": "320", "folder": "downloads", "update": True}
@@ -9,7 +8,7 @@ class ConfigManager:
     
     
     def __init__(self):
-        self.path = SCRIPT_PATH / "config.json"
+        self.path = Env.SCRIPT_PATH / "config.json"
         self.settings = default_settings
         logger.info("ConfigManager initialized")
 
@@ -29,31 +28,31 @@ class ConfigManager:
                 codec = loaded_file.get("codec")
                 quality = loaded_file.get("quality")
                 
-                if codec not in VALID_CODECS or quality not in VALID_QUALITIES:
+                if codec not in MediaData.VALID_CODECS or quality not in MediaData.VALID_QUALITIES:
                     raise ValueError(f"Invalid codec or quality: {codec}, {quality}")
                 self.settings = loaded_file
                 return "SUCCESS"
             
         except json.JSONDecodeError:
-            logger.exception("CMN-ER-001")
+            logger.exception(ErrorCodes.CONFIG_CORRUPT)
             self.settings = default_settings
             self.save()
             return "ERR_CORRUPT"
             
         except FileNotFoundError:
-            logger.exception("CMN-ER-002")
+            logger.exception(ErrorCodes.CONFIG_NOTFOUND)
             self.settings = default_settings
             self.save()
             return "ERR_NOTFOUND"
         
         except ValueError:
-            logger.exception("CMN-ER-003")
+            logger.exception(ErrorCodes.CONFIG_PARSE)
             self.settings = default_settings
             self.save()
             return "ERR_PARSE"
         
         except Exception:
-            logger.exception("CMNGR-ER-004")
+            logger.exception(ErrorCodes.CONFIG_UNKOWN)
             self.settings = default_settings
             self.save()
             return "ERR_UNKOWN"
@@ -65,8 +64,8 @@ class ConfigManager:
             with open(self.path, 'w') as f:
                 json.dump(self.settings, f, indent=4)
             return "SUCCESS"
-        except Exception as e:
-            logger.exception("CMN-ER-000")
+        except Exception:
+            logger.exception(ErrorCodes.CONFIG_SAVE)
             return "ERR_SAVE"
             
     def get(self, key):

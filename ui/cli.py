@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from core.constants import OS_NAME, MEDIAFETCH_VER
+from core.constants import Env, AppMeta
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ class CLIInterface:
                     self.handle_downloader()
                 case 2:
                     CLIUtils.clear()
-                    pass#self.config()
+                    self.config_menu()
                 case 3:
                     CLIUtils.clear()
                     self.show_about()
@@ -51,7 +51,7 @@ class CLIInterface:
         " files.\nCan be configured to change the output type.\n"
         "Chosen codecs and qualities are preferred, not guaranteed"
         " to be downloaded as.\nUsually, this only applies to qualities.\n"
-        "Ensure FFmpeg is set up before using.\n\n").format(mediafetch_ver=MEDIAFETCH_VER))
+        "Ensure FFmpeg is set up before using.\n\n").format(mediafetch_ver=AppMeta.MEDIAFETCH_VER))
         CLIUtils.pause()
         
     def handle_downloader(self) -> None:
@@ -74,6 +74,11 @@ class CLIInterface:
             case "ERR_UNKOWN" | _:
                 print(_("Something went wrong!"))
                 CLIUtils.pause()
+
+    
+    def config_menu(self) -> None:
+        pass
+        
         
     def handle_config_io(self) -> None:
         """Handles the loading and saving of the config manager."""
@@ -118,7 +123,7 @@ class CLIUtils:
     @staticmethod
     def clear() -> None:
         """Clears the terminal screen based on the operating system."""
-        subprocess.run(('cls' if OS_NAME == 'Windows' else 'clear'), shell=True)
+        subprocess.run(('cls' if Env.OS_NAME == 'Windows' else 'clear'), shell=True)
 
 
     @staticmethod

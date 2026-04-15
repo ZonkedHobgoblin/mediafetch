@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path
+from core.constants import ErrorCodes
 
 
 logger = logging.getLogger(__name__)
@@ -76,9 +76,9 @@ class MediaDownloader:
             return "SUCCESS"
             
         except yt_dlp.utils.DownloadError:
-            logger.exception("DL-ER-001")
+            logger.exception(ErrorCodes.DOWNLOAD_ERROR)
             return "ERR_DOWNLOAD"
             
         except Exception:
-            logger.exception("DL-ER-002")
+            logger.exception(ErrorCodes.DOWNLOAD_OTHER)
             return "ERR_UNKOWN"
