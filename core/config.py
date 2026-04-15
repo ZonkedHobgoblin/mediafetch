@@ -17,7 +17,8 @@ class ConfigManager:
         """Load our config and store it"""
         try:
             if not self.path.exists():
-                logger.warning("No config file found! Writing default settings.")
+                logger.warning(f"{ErrorCodes.CONFIG_NOTFOUND}: "
+                               "No config file found! Writing default settings.")
                 self.save()
                 return "SUCCESS"
             else:
