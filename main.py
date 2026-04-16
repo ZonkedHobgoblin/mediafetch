@@ -39,7 +39,7 @@ if __name__ == "__main__":
         print("\nExiting MediaFetch...")
         sys.exit(0)
         
-    except Exception as e:
+    except Exception:
         # if launch fails, we can fallback to traceback if logger wasnt setup
         error_details = traceback.format_exc()
         

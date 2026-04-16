@@ -23,6 +23,9 @@ class MediaData:
     VALID_CODECS = list(CODEC_TYPES.keys())
     VALID_QUALITIES = {item for sublist in CODEC_TYPES.values() for item in sublist}
 
+class UIConstants:
+    INPUT_PROMPT = "> "
+
 class ErrorCodes:
     DOWNLOAD_ERROR = "DL-ER-001"
     DOWNLOAD_OTHER = "DL-ER-002"

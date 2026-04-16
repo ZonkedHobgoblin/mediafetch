@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from core.constants import Env, AppMeta
+from core.constants import Env, AppMeta, UIConstants
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ class CLIInterface:
         while True:
             CLIUtils.clear()
             self.menu()
-            match CLIUtils.get_sanitized_num_input("> ", int, 1, 4):
+            match CLIUtils.get_sanitized_num_input(UIConstants.INPUT_PROMPT, int, 1, 4):
                 case 1:
                     CLIUtils.clear()
                     self.handle_downloader()
@@ -57,8 +57,9 @@ class CLIInterface:
     def handle_downloader(self) -> None:
         """Handles the download flow from the main menu."""
         CLIUtils.clear()
-        link = input(_("Enter YouTube URL (Video or Playlist): "))
-        print(_("Downloading: {url}").format(url=link))
+        print(_("Enter YouTube URL (Video or Playlist)"))
+        link = input(UIConstants.INPUT_PROMPT)
+        print(_("\nDownloading: {url}").format(url=link))
         status = self.downloader.download_audio(link, self.current_config["codec"], 
                                                 self.current_config["quality"], 
                                                 self.current_config["folder"])                      
@@ -77,7 +78,9 @@ class CLIInterface:
 
     
     def config_menu(self) -> None:
-        pass
+        """Handles the configuration sub-menu, allowing the user to mutate settings."""
+        CLIUtils.clear()
+        
         
         
     def handle_config_io(self) -> None:
